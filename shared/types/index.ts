@@ -1,5 +1,5 @@
 // ============================================================
-// CAM×AI SUITE — Shared TypeScript Types
+// KAM×AI SUITE — Shared TypeScript Types
 // Used across all 5 workflows
 // ============================================================
 

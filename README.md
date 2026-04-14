@@ -1,4 +1,4 @@
-# CAM×AI — Commercial Real Estate Automation Suite
+# KAM×AI — Commercial Real Estate Automation Suite
 ### Cameron Norwood · Tucson, AZ
 
 > **5 AI-powered workflows that eliminate the manual grind of commercial real estate brokerage.**

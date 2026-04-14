@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CAM×AI — Report Builder</title>
+<title>KAM×AI — Report Builder</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0e1118;--s1:#141820;--s2:#1c2230;--gold:#c9a84c;--gold2:#e8c96a;--green:#3ab87a;--text:#e8e4dc;--muted:#6a7a8a;--border:rgba(255,255,255,0.07);}
@@ -65,7 +65,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 </head>
 <body>
 <div class="topbar">
-  <div class="brand">CAM×AI</div>
+  <div class="brand">KAM×AI</div>
   <div class="nav-pill" onclick="location.href='../workflow-01-search-engine/frontend/index.html'">Search Engine</div>
   <div class="nav-pill active">Report Builder</div>
   <div class="nav-pill" onclick="location.href='../workflow-03-outreach-engine/frontend/index.html'">Outreach</div>
@@ -206,7 +206,7 @@ async function generateReport() {
       document.getElementById('downloadInfo').textContent = `Report ready · 5 properties · PDF`;
       document.getElementById('downloadBtn').onclick = () => {
         const a = document.createElement('a'); a.href = URL.createObjectURL(reportBlob);
-        a.download = `CAM-AI-Report-${Date.now()}.pdf`; a.click();
+        a.download = `KAM-AI-Report-${Date.now()}.pdf`; a.click();
       };
     } else {
       const data = await r.json();

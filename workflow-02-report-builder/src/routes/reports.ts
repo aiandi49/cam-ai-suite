@@ -67,7 +67,7 @@ router.post('/generate', async (req: Request, res: Response) => {
     // Return PDF
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="CAM-AI-Report-${Date.now()}.pdf"`,
+      'Content-Disposition': `attachment; filename="KAM-AI-Report-${Date.now()}.pdf"`,
     });
     res.send(report.pdfBuffer);
 
