@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Arial', sans-serif; background: #fff; color: #1a1a2a; font-size: 13px; }
+  
+  .cover {
+    background: #1a1a2a; color: #f5f0e8;
+    padding: 44px 52px; position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 260px; height: 100%;
+    background: repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(201,168,76,0.07) 8px, rgba(201,168,76,0.07) 9px);
+  }
+  .cover-brand { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: #c9a84c; margin-bottom: 20px; }
+  .cover-title { font-size: 30px; font-weight: 700; line-height: 1.15; margin-bottom: 8px; }
+  .cover-sub { font-size: 11px; color: #8a9aaa; margin-bottom: 24px; }
+  .cover-meta { display: flex; gap: 32px; flex-wrap: wrap; }
+  .meta-label { font-size: 8px; color: #5a6a7a; letter-spacing: 2px; text-transform: uppercase; }
+  .meta-val { font-size: 15px; font-weight: 700; color: #c9a84c; margin-top: 2px; }
+
+  .summary-bar {
+    background: #f5f0e8; padding: 14px 52px;
+    display: flex; gap: 36px; border-bottom: 1px solid #e0dbd0;
+  }
+  .sb-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #8a8a9a; }
+  .sb-val { font-size: 14px; font-weight: 700; color: #1a1a2a; margin-top: 1px; }
+
+  .props-section { padding: 28px 52px; }
+  .section-heading {
+    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+    color: #c9a84c; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-heading::after { content: ''; flex: 1; height: 1px; background: #e0dbd0; }
+
+  .prop-card {
+    border: 1px solid #e0dbd0; border-radius: 4px;
+    margin-bottom: 20px; overflow: hidden; page-break-inside: avoid;
+  }
+  .prop-header {
+    background: #faf8f4; padding: 14px 18px;
+    border-bottom: 1px solid #e0dbd0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .prop-addr { font-size: 15px; font-weight: 700; color: #1a1a2a; margin-bottom: 3px; }
+  .prop-cross { font-size: 10px; color: #6a6a7a; }
+  .prop-price { font-size: 18px; font-weight: 700; color: #2a7a4a; white-space: nowrap; }
+  .prop-price-label { font-size: 9px; color: #8a8a9a; text-align: right; }
+
+  .prop-body { padding: 14px 18px; }
+  .prop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  .pg-item { background: #f5f0e8; padding: 9px 11px; border-radius: 3px; }
+  .pg-label { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: #8a8a9a; margin-bottom: 2px; }
+  .pg-val { font-size: 14px; font-weight: 700; color: #1a1a2a; }
+
+  .prop-summary {
+    font-size: 11px; line-height: 1.7; color: #4a4a5a; font-style: italic;
+    padding: 11px 13px; background: #faf8f4;
+    border-left: 3px solid #c9a84c; border-radius: 0 3px 3px 0;
+    margin-bottom: 9px;
+  }
+  .prop-source { font-size: 9px; color: #8a8a9a; text-transform: uppercase; letter-spacing: 1px; }
+  .maps-link { font-size: 10px; color: #3a7fd4; text-decoration: none; }
+
+  .footer {
+    background: #1a1a2a; color: #5a6a7a;
+    padding: 18px 52px; display: flex; justify-content: space-between; align-items: center;
+    margin-top: 28px;
+  }
+  .footer-brand { color: #c9a84c; font-weight: 700; letter-spacing: 2px; font-size: 11px; }
+  .footer-contact { font-size: 9px; color: #3a4a5a; text-align: right; line-height: 1.6; }
+  .new-badge {
+    display: inline-block; font-size: 8px; padding: 2px 7px;
+    background: rgba(201,168,76,0.15); color: #c9a84c;
+    border: 1px solid rgba(201,168,76,0.3); border-radius: 10px;
+    letter-spacing: 1px; text-transform: uppercase; margin-left: 8px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-brand">{{brokerName}} · Commercial Real Estate · Tucson, AZ · {{brokerLicense}}</div>
+  <div class="cover-title">{{title}}</div>
+  <div class="cover-sub">Prepared for {{client.name}} · {{date}}</div>
+  <div class="cover-meta">
+    <div>
+      <div class="meta-label">Property Type</div>
+      <div class="meta-val">{{params.propertyType}}</div>
+    </div>
+    {{#if params.minSqft}}
+    <div>
+      <div class="meta-label">Size Range</div>
+      <div class="meta-val">{{params.minSqft}}–{{params.maxSqft}} SF</div>
+    </div>
+    {{/if}}
+    {{#if params.maxMonthly}}
+    <div>
+      <div class="meta-label">Max Monthly</div>
+      <div class="meta-val">${{params.maxMonthly}}/mo</div>
+    </div>
+    {{/if}}
+    <div>
+      <div class="meta-label">Properties Found</div>
+      <div class="meta-val">{{propertyCount}}</div>
+    </div>
+  </div>
+</div>
+
+<div class="summary-bar">
+  <div><div class="sb-label">Prepared by</div><div class="sb-val">{{brokerName}}</div></div>
+  <div><div class="sb-label">Contact</div><div class="sb-val">{{brokerPhone}}</div></div>
+  <div><div class="sb-label">Email</div><div class="sb-val">{{brokerEmail}}</div></div>
+  <div><div class="sb-label">Date</div><div class="sb-val">{{date}}</div></div>
+</div>
+
+<div class="props-section">
+  <div class="section-heading">Available Properties</div>
+
+  {{#each properties}}
+  <div class="prop-card">
+    <div class="prop-header">
+      <div>
+        <div class="prop-addr">{{address}}</div>
+        {{#if crossStreet}}
+        <div class="prop-cross">Cross Street: {{crossStreet}}</div>
+        {{/if}}
+      </div>
+      <div style="text-align:right">
+        {{#if askingMonthly}}
+        <div class="prop-price">${{askingMonthly}}/mo</div>
+        <div class="prop-price-label">Monthly Rate</div>
+        {{else}}
+        <div class="prop-price">Call for Rate</div>
+        {{/if}}
+      </div>
+    </div>
+    <div class="prop-body">
+      <div class="prop-grid">
+        <div class="pg-item">
+          <div class="pg-label">Square Feet</div>
+          <div class="pg-val">{{sqft}}</div>
+        </div>
+        <div class="pg-item">
+          <div class="pg-label">Year Built</div>
+          <div class="pg-val">{{#if yearBuilt}}{{yearBuilt}}{{else}}N/A{{/if}}</div>
+        </div>
+        <div class="pg-item">
+          <div class="pg-label">Traffic / Day</div>
+          <div class="pg-val">{{#if trafficCount}}{{trafficCount}}{{else}}N/A{{/if}}</div>
+        </div>
+        <div class="pg-item">
+          <div class="pg-label">Parking</div>
+          <div class="pg-val">{{#if parkingRatio}}{{parkingRatio}}/1,000{{else}}N/A{{/if}}</div>
+        </div>
+        <div class="pg-item">
+          <div class="pg-label">Sprinklered</div>
+          <div class="pg-val">{{#if sprinklered}}Yes{{else}}No{{/if}}</div>
+        </div>
+        <div class="pg-item">
+          <div class="pg-label">Source</div>
+          <div class="pg-val" style="text-transform:uppercase;font-size:11px;">{{source}}</div>
+        </div>
+      </div>
+      {{#if aiSummary}}
+      <div class="prop-summary">{{aiSummary}}</div>
+      {{/if}}
+      {{#if mapsLink}}
+      <a class="maps-link" href="{{mapsLink}}">📍 View on Google Maps →</a>
+      {{/if}}
+    </div>
+  </div>
+  {{/each}}
+</div>
+
+<div class="footer">
+  <div>
+    <div class="footer-brand">{{brokerName}} · CAM×AI</div>
+    <div style="font-size:9px;color:#3a4a5a;margin-top:3px;">Powered by AI · Generated {{date}}</div>
+  </div>
+  <div class="footer-contact">
+    {{brokerPhone}} · {{brokerEmail}}<br>
+    5151 E Broadway, Suite 115 · Tucson, AZ 85711<br>
+    License: {{brokerLicense}}
+  </div>
+</div>
+
+</body>
+</html>

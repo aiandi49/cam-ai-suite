@@ -1,0 +1,34 @@
+{
+  "name": "cam-ai-suite",
+  "version": "1.0.0",
+  "description": "Cameron Norwood — Commercial Real Estate AI Automation Suite",
+  "private": true,
+  "workspaces": [
+    "workflow-01-search-engine",
+    "workflow-02-report-builder",
+    "workflow-03-outreach-engine",
+    "workflow-04-owner-finder",
+    "workflow-05-off-market-hunter",
+    "shared"
+  ],
+  "scripts": {
+    "dev:wf1": "cd workflow-01-search-engine && npm run dev",
+    "dev:wf2": "cd workflow-02-report-builder && npm run dev",
+    "dev:wf3": "cd workflow-03-outreach-engine && npm run dev",
+    "dev:wf4": "cd workflow-04-owner-finder && npm run dev",
+    "dev:wf5": "cd workflow-05-off-market-hunter && npm run dev",
+    "dev:all": "concurrently \"npm:dev:wf1\" \"npm:dev:wf2\" \"npm:dev:wf3\"",
+    "build:all": "npm run build --workspaces",
+    "test:all": "npm run test --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "author": "Lamar (AI & I) <ai.agent.lamar@gmail.com>",
+  "license": "UNLICENSED"
+}

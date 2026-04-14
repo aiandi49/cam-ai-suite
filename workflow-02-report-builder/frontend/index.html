@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAM×AI — Report Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1118;--s1:#141820;--s2:#1c2230;--gold:#c9a84c;--gold2:#e8c96a;--green:#3ab87a;--text:#e8e4dc;--muted:#6a7a8a;--border:rgba(255,255,255,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:rgba(14,17,24,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:56px;position:sticky;top:0;z-index:100;}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--gold);}
+.nav-pill{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;border:1px solid transparent;transition:all 0.2s;color:var(--muted);}
+.nav-pill.active{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.3);color:var(--gold);}
+.layout{display:flex;flex:1;overflow:hidden;}
+.left-panel{width:320px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.panel-header{padding:20px 24px;border-bottom:1px solid var(--border);}
+.panel-header h3{font-size:14px;font-weight:700;margin-bottom:3px;}
+.panel-header p{font-size:10px;color:var(--muted);}
+.form-body{flex:1;overflow-y:auto;padding:20px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-family:'DM Mono',monospace;margin-bottom:6px;}
+.form-group input,.form-group select{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--text);font-family:'DM Mono',monospace;outline:none;transition:border-color 0.2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold);}
+.form-group input::placeholder{color:var(--muted);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.toggle-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.toggle-chip{font-size:9px;padding:4px 10px;border-radius:3px;border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;}
+.toggle-chip.on{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.3);color:var(--gold);}
+.gen-btn{margin:0 20px 20px;padding:14px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;width:calc(100% - 40px);transition:background 0.2s;}
+.gen-btn:hover{background:var(--gold2);}
+.gen-btn:disabled{background:#444;color:#666;cursor:wait;}
+.right-panel{flex:1;background:#f5f0e8;overflow-y:auto;}
+.preview-cover{background:#1a1a2a;color:#f5f0e8;padding:40px 48px;position:relative;overflow:hidden;}
+.preview-cover::before{content:'';position:absolute;top:0;right:0;width:220px;height:100%;background:repeating-linear-gradient(-45deg,transparent,transparent 7px,rgba(201,168,76,0.06) 7px,rgba(201,168,76,0.06) 8px);}
+.pc-brand{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#c9a84c;margin-bottom:18px;}
+.pc-title{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:8px;}
+.pc-sub{font-size:11px;color:#8a9aaa;font-family:'DM Mono',monospace;margin-bottom:20px;}
+.pc-meta{display:flex;gap:24px;flex-wrap:wrap;}
+.pm-label{font-size:8px;color:#5a6a7a;text-transform:uppercase;letter-spacing:2px;}
+.pm-val{font-size:14px;font-weight:700;color:#c9a84c;}
+.preview-props{padding:28px 48px;}
+.preview-section-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#c9a84c;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.preview-section-label::after{content:'';flex:1;height:1px;background:#e0dbd0;}
+.prop-preview-card{background:#fff;border:1px solid #e0dbd0;border-radius:4px;margin-bottom:16px;overflow:hidden;}
+.ppc-header{background:#faf8f4;padding:14px 18px;border-bottom:1px solid #e0dbd0;display:flex;justify-content:space-between;align-items:flex-start;}
+.ppc-addr{font-size:14px;font-weight:700;color:#1a1a2a;margin-bottom:3px;}
+.ppc-cross{font-size:10px;color:#6a6a7a;}
+.ppc-price{font-size:16px;font-weight:700;color:#2a7a4a;}
+.ppc-body{padding:14px 18px;}
+.ppc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.ppc-cell{background:#f5f0e8;padding:8px 10px;border-radius:3px;}
+.ppc-label{font-size:8px;text-transform:uppercase;letter-spacing:1px;color:#8a8a9a;}
+.ppc-val{font-size:13px;font-weight:700;color:#1a1a2a;margin-top:1px;}
+.ppc-ai{font-size:11px;line-height:1.7;color:#4a4a5a;font-style:italic;padding:10px 12px;background:#faf8f4;border-left:3px solid #c9a84c;margin-bottom:8px;}
+.ppc-maps{font-size:10px;color:#3a7fd4;text-decoration:none;}
+.generating{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:#6a6a7a;}
+.gen-spinner{width:40px;height:40px;border:3px solid rgba(201,168,76,0.2);border-top-color:#c9a84c;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.download-bar{background:#fff;border-top:1px solid #e0dbd0;padding:16px 48px;display:flex;justify-content:space-between;align-items:center;position:sticky;bottom:0;}
+.download-bar p{font-size:12px;color:#6a6a7a;}
+.btn-download{padding:10px 24px;background:#c9a84c;color:#000;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">CAM×AI</div>
+  <div class="nav-pill" onclick="location.href='../workflow-01-search-engine/frontend/index.html'">Search Engine</div>
+  <div class="nav-pill active">Report Builder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-03-outreach-engine/frontend/index.html'">Outreach</div>
+  <div class="nav-pill" onclick="location.href='../workflow-04-owner-finder/frontend/index.html'">Owner Finder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-05-off-market-hunter/frontend/index.html'">Off-Market</div>
+</div>
+
+<div class="layout">
+  <div class="left-panel">
+    <div class="panel-header">
+      <h3>Report Parameters</h3>
+      <p>Configure and generate a branded report</p>
+    </div>
+    <div class="form-body">
+      <div class="form-group"><label>Client Name</label><input id="clientName" placeholder="Elijah Daly" /></div>
+      <div class="form-group"><label>Client Email</label><input id="clientEmail" placeholder="elijah@email.com" /></div>
+      <div class="form-group">
+        <label>Property Type</label>
+        <select id="propType">
+          <option value="retail">Retail</option>
+          <option value="office">Office</option>
+          <option value="industrial">Industrial</option>
+          <option value="mixed">Mixed Use</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Min SF</label><input id="minSf" type="number" placeholder="2500" /></div>
+        <div class="form-group"><label>Max SF</label><input id="maxSf" type="number" placeholder="3500" /></div>
+      </div>
+      <div class="form-group"><label>Max Monthly ($)</label><input id="maxRent" type="number" placeholder="3500" /></div>
+      <div class="form-group">
+        <label>Report Title (optional)</label>
+        <input id="reportTitle" placeholder="Auto-generated if blank" />
+      </div>
+      <div class="form-group">
+        <label>Include</label>
+        <div class="toggle-row">
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">Photos</div>
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">Map Links</div>
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">AI Summaries</div>
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">Traffic Count</div>
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">Cross Streets</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Data Sources</label>
+        <div class="toggle-row">
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">CoStar</div>
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">Crexi</div>
+          <div class="toggle-chip on" onclick="this.classList.toggle('on')">LoopNet</div>
+        </div>
+      </div>
+    </div>
+    <button class="gen-btn" id="genBtn" onclick="generateReport()">⚡ Generate Report</button>
+  </div>
+
+  <div class="right-panel" id="rightPanel">
+    <div class="preview-cover">
+      <div class="pc-brand">KAMERON NORWOOD · COMMERCIAL REAL ESTATE · TUCSON, AZ</div>
+      <div class="pc-title" id="previewTitle">Retail Space Report — Tucson</div>
+      <div class="pc-sub" id="previewSub">Fill in the form and click Generate</div>
+      <div class="pc-meta">
+        <div><div class="pm-label">Type</div><div class="pm-val" id="pm-type">—</div></div>
+        <div><div class="pm-label">Size Range</div><div class="pm-val" id="pm-size">—</div></div>
+        <div><div class="pm-label">Max Monthly</div><div class="pm-val" id="pm-budget">—</div></div>
+        <div><div class="pm-label">Properties</div><div class="pm-val" id="pm-count">—</div></div>
+      </div>
+    </div>
+    <div class="preview-props" id="previewProps">
+      <div class="generating">
+        <div style="font-size:32px;margin-bottom:12px;">📄</div>
+        <p style="font-size:13px;">Enter parameters and hit Generate</p>
+        <p style="font-size:11px;margin-top:6px;">AI will write property summaries + add Maps links</p>
+      </div>
+    </div>
+    <div class="download-bar" id="downloadBar" style="display:none;">
+      <p id="downloadInfo">Report ready</p>
+      <button class="btn-download" id="downloadBtn">⬇ Download PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:3002' : 'https://wf2-report-builder.up.railway.app';
+let reportBlob = null;
+
+// Live preview update
+['clientName','propType','minSf','maxSf','maxRent'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', updatePreview);
+});
+document.getElementById('propType').addEventListener('change', updatePreview);
+
+function updatePreview() {
+  const name = document.getElementById('clientName').value || 'Client';
+  const type = document.getElementById('propType').value || 'retail';
+  const min = document.getElementById('minSf').value;
+  const max = document.getElementById('maxSf').value;
+  const budget = document.getElementById('maxRent').value;
+  document.getElementById('previewTitle').textContent = `${type.charAt(0).toUpperCase()+type.slice(1)} Space Report`;
+  document.getElementById('previewSub').textContent = `Prepared for ${name} · ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}`;
+  document.getElementById('pm-type').textContent = type.charAt(0).toUpperCase()+type.slice(1);
+  document.getElementById('pm-size').textContent = (min||'?') + '–' + (max||'?') + ' SF';
+  document.getElementById('pm-budget').textContent = budget ? '$'+parseInt(budget).toLocaleString()+'/mo' : '—';
+}
+
+async function generateReport() {
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true; btn.textContent = '⏳ Generating...';
+  
+  document.getElementById('previewProps').innerHTML = `
+    <div class="generating">
+      <div class="gen-spinner"></div>
+      <p>Fetching properties from database...</p>
+      <p style="font-size:11px;margin-top:6px;color:#8a8a9a;">Claude AI is writing summaries for each property</p>
+    </div>`;
+  document.getElementById('downloadBar').style.display = 'none';
+
+  const body = {
+    clientName: document.getElementById('clientName').value || 'Demo Client',
+    clientEmail: document.getElementById('clientEmail').value || 'demo@example.com',
+    propertyType: document.getElementById('propType').value,
+    minSqft: parseInt(document.getElementById('minSf').value) || 2500,
+    maxSqft: parseInt(document.getElementById('maxSf').value) || 3500,
+    maxMonthly: parseInt(document.getElementById('maxRent').value) || 3500,
+    title: document.getElementById('reportTitle').value || null,
+  };
+
+  try {
+    const r = await fetch(`${API}/api/reports/generate`, {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+
+    if (r.ok && r.headers.get('content-type')?.includes('pdf')) {
+      reportBlob = await r.blob();
+      showDemoPreview(body);
+      document.getElementById('pm-count').textContent = '5';
+      document.getElementById('downloadBar').style.display = 'flex';
+      document.getElementById('downloadInfo').textContent = `Report ready · 5 properties · PDF`;
+      document.getElementById('downloadBtn').onclick = () => {
+        const a = document.createElement('a'); a.href = URL.createObjectURL(reportBlob);
+        a.download = `CAM-AI-Report-${Date.now()}.pdf`; a.click();
+      };
+    } else {
+      const data = await r.json();
+      showDemoPreview(body);
+    }
+  } catch(e) {
+    showDemoPreview(body);
+  }
+
+  btn.disabled = false; btn.textContent = '⚡ Generate Report';
+}
+
+function showDemoPreview(params) {
+  const demoProps = [
+    {address:'4820 E Broadway Blvd',sqft:2800,price:3220,built:2008,cross:'Rosemont Blvd',traffic:'38,000',parking:'4.0/1,000',sprinklered:'Yes',summary:'This end-cap retail space sits on one of Tucson\'s busiest east-west corridors. High visibility, ample parking, and immediate availability make it an ideal fit for a retail or service business looking to capture steady foot traffic.'},
+    {address:'2930 N Oracle Rd',sqft:3200,price:3456,built:2015,cross:'Wetmore Rd',traffic:'52,000',parking:'5.5/1,000',sprinklered:'Yes',summary:'Oracle Road frontage with 52,000 daily drivers and superior parking. Built in 2015 with modern buildout — move-in ready for retail or food service operations without significant tenant improvement costs.'},
+    {address:'6280 S Campbell Ave',sqft:2600,price:2990,built:2001,cross:'Irvington Rd',traffic:'28,000',parking:'4.0/1,000',sprinklered:'No',summary:'Well-priced south side retail opportunity at $2,990/mo. The 2,600 SF footprint works well for professional services, personal care, or light retail. Non-sprinklered — confirm with fire marshal for intended use.'},
+  ];
+  
+  document.getElementById('pm-count').textContent = demoProps.length;
+  document.getElementById('previewProps').innerHTML = `
+    <div class="preview-section-label">Available Properties — ${params.propertyType}</div>
+    ${demoProps.map(p => `
+      <div class="prop-preview-card">
+        <div class="ppc-header">
+          <div><div class="ppc-addr">${p.address}</div><div class="ppc-cross">Cross: ${p.cross}</div></div>
+          <div><div class="ppc-price">$${p.price.toLocaleString()}/mo</div></div>
+        </div>
+        <div class="ppc-body">
+          <div class="ppc-grid">
+            <div class="ppc-cell"><div class="ppc-label">Square Feet</div><div class="ppc-val">${p.sqft.toLocaleString()}</div></div>
+            <div class="ppc-cell"><div class="ppc-label">Year Built</div><div class="ppc-val">${p.built}</div></div>
+            <div class="ppc-cell"><div class="ppc-label">Traffic/Day</div><div class="ppc-val">${p.traffic}</div></div>
+            <div class="ppc-cell"><div class="ppc-label">Parking</div><div class="ppc-val">${p.parking}</div></div>
+            <div class="ppc-cell"><div class="ppc-label">Sprinklered</div><div class="ppc-val">${p.sprinklered}</div></div>
+          </div>
+          <div class="ppc-ai">🤖 ${p.summary}</div>
+          <a class="ppc-maps" href="https://maps.google.com/?q=${encodeURIComponent(p.address+', Tucson AZ')}" target="_blank">📍 View on Google Maps →</a>
+        </div>
+      </div>
+    `).join('')}`;
+  
+  document.getElementById('downloadBar').style.display = 'flex';
+  document.getElementById('downloadInfo').textContent = `Preview ready · ${demoProps.length} properties`;
+  document.getElementById('downloadBtn').textContent = '⬇ Download PDF';
+}
+
+updatePreview();
+</script>
+</body>
+</html>

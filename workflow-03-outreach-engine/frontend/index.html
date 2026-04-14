@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAM×AI — Outreach Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06100a;--s1:#0a180e;--s2:#101f14;--green:#3ab87a;--gold:#c9a84c;--text:#d8ead8;--muted:#4a6a4a;--border:rgba(255,255,255,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:rgba(6,16,10,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:56px;}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--gold);}
+.nav-pill{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;border:1px solid transparent;transition:all 0.2s;color:var(--muted);}
+.nav-pill.active{background:rgba(58,184,122,0.12);border-color:rgba(58,184,122,0.3);color:var(--green);}
+.layout{display:flex;flex:1;}
+.left{width:320px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.panel-h{padding:20px;border-bottom:1px solid var(--border);}
+.panel-h h3{font-size:13px;font-weight:700;margin-bottom:3px;}
+.panel-h p{font-size:10px;color:var(--muted);}
+.upload-zone{margin:16px;border:1.5px dashed rgba(58,184,122,0.3);border-radius:10px;padding:28px;text-align:center;background:rgba(58,184,122,0.03);cursor:pointer;transition:all 0.2s;}
+.upload-zone:hover{border-color:var(--green);background:rgba(58,184,122,0.06);}
+.uz-icon{font-size:36px;margin-bottom:8px;}
+.uz-text{font-size:12px;color:var(--green);margin-bottom:4px;}
+.uz-sub{font-size:10px;color:var(--muted);}
+.uz-btn{margin-top:12px;padding:9px 20px;background:var(--green);color:#000;border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1.5px;}
+.flyer-preview{margin:0 16px 16px;background:linear-gradient(160deg,#1a2a1a,#2a3a20);border-radius:8px;padding:18px;text-align:center;}
+.fp-icon{font-size:28px;margin-bottom:6px;}
+.fp-title{font-size:13px;font-weight:700;}
+.fp-meta{font-size:10px;color:#8aaa8a;font-family:'DM Mono',monospace;}
+.extracted{padding:0 16px 16px;}
+.ext-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);font-family:'DM Mono',monospace;margin-bottom:10px;}
+.ext-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;}
+.ext-key{color:var(--muted);}
+.ext-val{font-weight:600;color:var(--text);}
+.ext-val.gold{color:var(--gold);}
+.ext-val.green{color:var(--green);}
+.right{flex:1;display:flex;flex-direction:column;}
+.right-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.right-header h4{font-size:14px;font-weight:700;}
+.right-header p{font-size:10px;color:var(--muted);}
+.btn-green{padding:9px 20px;background:var(--green);color:#000;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.leads-list{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:8px;}
+.lead-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;transition:border-color 0.2s;}
+.lead-card:hover{border-color:rgba(58,184,122,0.3);}
+.la{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2a3a4a,#3a4a5a);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.li{flex:1;}
+.li-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.li-company{font-size:10px;color:var(--muted);}
+.li-lease{font-size:10px;color:var(--green);font-family:'DM Mono',monospace;margin-top:4px;}
+.score-badge{font-size:9px;padding:3px 9px;border-radius:10px;font-family:'DM Mono',monospace;white-space:nowrap;flex-shrink:0;}
+.hot{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid rgba(201,168,76,0.3);}
+.warm{background:rgba(58,184,122,0.15);color:var(--green);border:1px solid rgba(58,184,122,0.2);}
+.cold{background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">CAM×AI</div>
+  <div class="nav-pill" onclick="location.href='../workflow-01-search-engine/frontend/index.html'">Search Engine</div>
+  <div class="nav-pill" onclick="location.href='../workflow-02-report-builder/frontend/index.html'">Report Builder</div>
+  <div class="nav-pill active">Outreach</div>
+  <div class="nav-pill" onclick="location.href='../workflow-04-owner-finder/frontend/index.html'">Owner Finder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-05-off-market-hunter/frontend/index.html'">Off-Market</div>
+</div>
+<div class="layout">
+  <div class="left">
+    <div class="panel-h"><h3>Tenant Outreach Engine</h3><p>Upload flyer → AI finds leads → send campaign</p></div>
+    <div class="upload-zone" onclick="loadDemo()">
+      <div class="uz-icon">📎</div>
+      <div class="uz-text">Upload Listing Flyer</div>
+      <div class="uz-sub">PDF or Image · AI reads it automatically</div>
+      <button class="uz-btn">Choose File</button>
+    </div>
+    <div id="flyerData" style="display:none;">
+      <div class="flyer-preview"><div class="fp-icon">🏢</div><div class="fp-title">9200 E Broadway Blvd</div><div class="fp-meta">Retail · 3,200 SF · $3,200/mo</div></div>
+      <div class="extracted">
+        <div class="ext-title">AI Extracted Profile</div>
+        <div class="ext-row"><span class="ext-key">Address</span><span class="ext-val">9200 E Broadway</span></div>
+        <div class="ext-row"><span class="ext-key">Type</span><span class="ext-val">Retail / Office</span></div>
+        <div class="ext-row"><span class="ext-key">Size</span><span class="ext-val">3,200 SF</span></div>
+        <div class="ext-row"><span class="ext-key">Price</span><span class="ext-val">$3,200/mo</span></div>
+        <div class="ext-row"><span class="ext-key">Target Tenant</span><span class="ext-val gold">Retail, Restaurant, Service</span></div>
+        <div class="ext-row"><span class="ext-key">Leads Found</span><span class="ext-val green">62 matches</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="right-header">
+      <div><h4>Lead List (62 matches)</h4><p>Tenants who leased similar space in the last 5 years</p></div>
+      <button class="btn-green" onclick="alert('Campaign sent to 62 leads! AI-drafted personalized emails fired from your G Suite account.')">📤 Send Campaign to All 62</button>
+    </div>
+    <div class="leads-list" id="leadsList">
+      <div style="text-align:center;padding:60px;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;">Upload a flyer to generate leads</div>
+    </div>
+  </div>
+</div>
+<script>
+function loadDemo() {
+  document.getElementById('flyerData').style.display = 'block';
+  const leads = [
+    {icon:'👩',name:'Maria Santos',company:'Santos Bakery',lease:'Leased 2,400 SF · Grant Rd · 2022',score:'hot'},
+    {icon:'👨',name:'Derek Nolan',company:'Nolan Fitness',lease:'Leased 3,100 SF · Speedway · 2021',score:'hot'},
+    {icon:'🏢',name:'Pima Family Advocacy',company:'Nonprofit Office',lease:'Leased 2,200 SF · Fort Lowell · 2023',score:'warm'},
+    {icon:'💇',name:'Lucinda Vela',company:'LV Salon',lease:'Leased 1,800 SF · Speedway · 2020',score:'cold'},
+    {icon:'🍕',name:'Tony Rosario',company:"Tony's Pizza",lease:'Leased 2,600 SF · Broadway · 2021',score:'warm'},
+    {icon:'💊',name:'Vitality Health',company:'Supplement Store',lease:'Leased 2,800 SF · Oracle · 2022',score:'hot'},
+  ];
+  document.getElementById('leadsList').innerHTML = leads.map(l=>`
+    <div class="lead-card">
+      <div class="la">${l.icon}</div>
+      <div class="li">
+        <div class="li-name">${l.name}</div>
+        <div class="li-company">${l.company}</div>
+        <div class="li-lease">${l.lease}</div>
+      </div>
+      <div>
+        <span class="score-badge ${l.score}">${l.score.toUpperCase()}</span>
+        <div style="margin-top:6px"><button style="font-size:9px;padding:4px 10px;border:1px solid rgba(255,255,255,0.1);border-radius:4px;cursor:pointer;color:#aaa;background:transparent;" onclick="alert('AI email draft:\\n\\nHey ${l.name.split(' ')[0]}, saw you leased space nearby. I have a 3,200 SF retail spot on Broadway that might be a great next move. Would love to chat 5 min. — Kameron')">View Draft</button></div>
+      </div>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>

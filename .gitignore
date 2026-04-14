@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment Variables — NEVER COMMIT THESE
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Database
+*.sqlite
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads / generated files
+assets/flyers/*
+assets/reports/*
+!assets/flyers/.gitkeep
+!assets/reports/.gitkeep
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Misc
+*.pem
+.cache/

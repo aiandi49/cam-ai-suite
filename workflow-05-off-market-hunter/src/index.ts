@@ -1,0 +1,13 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import huntRoutes from './routes/hunt';
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.get('/health', (_req, res) => res.json({ status: 'ok', workflow: 'off-market-hunter', timestamp: new Date().toISOString() }));
+app.use('/api/hunt', huntRoutes);
+const PORT = process.env.PORT || 3005;
+app.listen(PORT, () => console.log(`[WF5] Off-Market Hunter running on port ${PORT}`));
+export default app;

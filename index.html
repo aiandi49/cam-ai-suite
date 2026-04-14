@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAM×AI — Commercial Real Estate Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c10;--s1:#0e1420;--gold:#c9a84c;--text:#e8e4dc;--muted:#5a6a7a;--border:rgba(255,255,255,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:72px;letter-spacing:4px;color:var(--gold);line-height:1;margin-bottom:8px;}
+.tagline{font-size:13px;color:var(--muted);margin-bottom:8px;}
+.sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:2px;margin-bottom:48px;}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;max-width:900px;width:100%;}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:28px;cursor:pointer;transition:all 0.2s;text-decoration:none;color:inherit;display:block;}
+.card:hover{border-color:rgba(201,168,76,0.4);transform:translateY(-2px);}
+.card-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gold);opacity:0.4;line-height:1;margin-bottom:8px;}
+.card-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+.card-desc{font-size:11px;color:var(--muted);line-height:1.7;}
+.card-tag{display:inline-block;font-size:8px;padding:3px 9px;border-radius:10px;margin-top:10px;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;}
+.phase1{background:rgba(58,184,122,0.12);color:#3ab87a;border:1px solid rgba(58,184,122,0.2);}
+.phase2{background:rgba(74,159,212,0.1);color:#4a9fd4;border:1px solid rgba(74,159,212,0.15);}
+</style>
+</head>
+<body>
+<div class="logo">CAM×AI</div>
+<div class="tagline">Kameron Norwood · Commercial Real Estate · Tucson, AZ</div>
+<div class="sub">Powered by AI · Built by Lamar Myers</div>
+<div class="grid">
+  <a class="card" href="workflow-01-search-engine/frontend/index.html">
+    <div class="card-num">01</div>
+    <div class="card-title">Search & Alert Engine</div>
+    <div class="card-desc">Daily property search across CoStar, Crexi & LoopNet. Personalized email + SMS alerts per client, only when something new hits.</div>
+    <span class="card-tag phase1">Phase 1</span>
+  </a>
+  <a class="card" href="workflow-02-report-builder/frontend/index.html">
+    <div class="card-num">02</div>
+    <div class="card-title">Report Builder</div>
+    <div class="card-desc">AI-generated branded PDF reports. Enter params, hit generate. Claude writes property summaries. Google Maps links included.</div>
+    <span class="card-tag phase1">Phase 1</span>
+  </a>
+  <a class="card" href="workflow-03-outreach-engine/frontend/index.html">
+    <div class="card-num">03</div>
+    <div class="card-title">Outreach Engine</div>
+    <div class="card-desc">Upload a listing flyer. AI finds tenants who leased similar space. Fires personalized campaign emails to 60+ leads.</div>
+    <span class="card-tag phase1">Phase 1</span>
+  </a>
+  <a class="card" href="workflow-04-owner-finder/frontend/index.html">
+    <div class="card-num">04</div>
+    <div class="card-title">Owner Finder</div>
+    <div class="card-desc">Address in, human contact out. Pima Maps → AZ Corp Commission → LinkedIn → full contact card. No API needed.</div>
+    <span class="card-tag phase2">Phase 2</span>
+  </a>
+  <a class="card" href="workflow-05-off-market-hunter/frontend/index.html">
+    <div class="card-num">05</div>
+    <div class="card-title">Off-Market Hunter</div>
+    <div class="card-desc">Buyer needs 2K SF on an acre but nothing's listed? Find every match in Tucson, trace the owner, send the pitch.</div>
+    <span class="card-tag phase2">Phase 2</span>
+  </a>
+  <div class="card" style="display:flex;align-items:center;justify-content:center;border-style:dashed;cursor:default;opacity:0.4;">
+    <div style="text-align:center;font-size:11px;color:var(--muted);">More workflows<br>coming soon</div>
+  </div>
+</div>
+</body>
+</html>

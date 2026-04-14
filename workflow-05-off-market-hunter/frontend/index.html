@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAM×AI — Off-Market Hunter</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060a10;--s1:#0a1020;--s2:#101828;--blue:#4a9fd4;--gold:#c9a84c;--text:#d8e8f5;--muted:#4a6a8a;--border:rgba(255,255,255,0.07);--green:#3ab87a;--red:#e05a5a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:rgba(6,10,16,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:56px;}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--gold);}
+.nav-pill{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;border:1px solid transparent;transition:all 0.2s;color:var(--muted);}
+.nav-pill.active{background:rgba(74,159,212,0.12);border-color:rgba(74,159,212,0.3);color:var(--blue);}
+.header{padding:24px 32px;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.header h4{font-size:14px;font-weight:700;white-space:nowrap;}
+.param-chip{padding:7px 14px;background:var(--s1);border:1px solid rgba(74,159,212,0.3);border-radius:20px;font-size:10px;color:var(--blue);cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;}
+.param-chip:hover{background:rgba(74,159,212,0.1);}
+.hunt-btn{padding:9px 20px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-left:auto;transition:background 0.2s;}
+.hunt-btn:hover{background:#5aaae4;}
+.body{display:flex;flex:1;overflow:hidden;}
+.map-area{flex:1;background:#080f18;position:relative;overflow:hidden;}
+.map-bg{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px),repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(255,255,255,0.015) 40px,rgba(255,255,255,0.015) 41px);}
+.map-label{position:absolute;top:14px;left:14px;font-size:9px;letter-spacing:3px;color:var(--muted);font-family:'DM Mono',monospace;text-transform:uppercase;z-index:5;}
+.map-count{position:absolute;bottom:14px;left:14px;background:rgba(74,159,212,0.15);border:1px solid rgba(74,159,212,0.3);border-radius:6px;padding:8px 14px;font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;z-index:5;}
+.marker{position:absolute;width:12px;height:12px;border-radius:50%;cursor:pointer;transition:transform 0.2s;z-index:4;}
+.marker:hover{transform:scale(1.5);}
+.marker::after{content:'';position:absolute;inset:-5px;border-radius:50%;animation:ripple 2s infinite;}
+@keyframes ripple{0%{transform:scale(0.8);opacity:0.6}100%{transform:scale(2.5);opacity:0}}
+.marker.hot{background:#e05a5a;}.marker.hot::after{background:rgba(224,90,90,0.15);}
+.marker.warm{background:var(--gold);}.marker.warm::after{background:rgba(201,168,76,0.1);}
+.marker.cold{background:var(--blue);}.marker.cold::after{background:rgba(74,159,212,0.1);}
+.legend{position:absolute;bottom:14px;right:14px;display:flex;gap:12px;z-index:5;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--muted);}
+.leg-dot{width:8px;height:8px;border-radius:50%;}
+.results-panel{width:340px;border-left:1px solid var(--border);display:flex;flex-direction:column;}
+.rp-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rp-header h5{font-size:13px;font-weight:700;}
+.result-count{font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;}
+.result-list{flex:1;overflow-y:auto;padding:12px;}
+.result-card{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all 0.2s;}
+.result-card:hover,.result-card.sel{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.04);}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;}
+.rc-addr{font-size:12px;font-weight:600;}
+.rc-type{font-size:10px;color:var(--muted);}
+.match-pill{font-size:9px;padding:2px 8px;border-radius:10px;font-family:'DM Mono',monospace;white-space:nowrap;}
+.mp-high{background:rgba(58,184,122,0.15);color:var(--green);border:1px solid rgba(58,184,122,0.2);}
+.mp-med{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid rgba(201,168,76,0.2);}
+.rc-meta{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:5px;}
+.rc-owner{font-size:10px;color:var(--blue);}
+.rc-btns{display:flex;gap:6px;margin-top:8px;}
+.rc-btn{flex:1;padding:5px;text-align:center;border-radius:4px;font-size:9px;cursor:pointer;font-family:'DM Mono',monospace;}
+.rcb-p{background:rgba(201,168,76,0.12);color:var(--gold);border:1px solid rgba(201,168,76,0.2);}
+.rcb-s{background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">CAM×AI</div>
+  <div class="nav-pill" onclick="location.href='../workflow-01-search-engine/frontend/index.html'">Search Engine</div>
+  <div class="nav-pill" onclick="location.href='../workflow-02-report-builder/frontend/index.html'">Report Builder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-03-outreach-engine/frontend/index.html'">Outreach</div>
+  <div class="nav-pill" onclick="location.href='../workflow-04-owner-finder/frontend/index.html'">Owner Finder</div>
+  <div class="nav-pill active">Off-Market</div>
+</div>
+<div class="header">
+  <h4>Off-Market Hunter</h4>
+  <div class="param-chip">2,000+ SF</div>
+  <div class="param-chip">1+ Acre</div>
+  <div class="param-chip">Retail / Industrial</div>
+  <div class="param-chip">NE Tucson</div>
+  <div class="param-chip">≤ $500K</div>
+  <button class="hunt-btn" onclick="runHunt()">🎯 Run Hunt</button>
+</div>
+<div class="body">
+  <div class="map-area" id="mapArea">
+    <div class="map-bg"></div>
+    <div class="map-label">Tucson Metro · Click "Run Hunt" to find properties</div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#e05a5a"></div>High</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c9a84c"></div>Med</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#4a9fd4"></div>Low</div>
+    </div>
+  </div>
+  <div class="results-panel">
+    <div class="rp-header"><h5>Properties Found</h5><span class="result-count" id="resultCount">0 results</span></div>
+    <div class="result-list" id="resultList"><div style="text-align:center;padding:60px 20px;color:var(--muted);font-size:11px;font-family:'DM Mono',monospace;">Click "Run Hunt" to search for off-market properties matching buyer criteria</div></div>
+  </div>
+</div>
+<script>
+function runHunt() {
+  const results = [
+    {addr:'8441 E 22nd St',type:'Industrial · Not Listed',meta:'2,200 SF · 1.2 Acres · Zoned I-1 · Est. $420K',owner:'Owner: Mesa Ventures LLC → Carl Torres (traced)',score:'high',pos:{top:'38%',left:'62%'},heat:'hot'},
+    {addr:'4022 N Stone Ave',type:'Retail · Not Listed',meta:'2,800 SF · 1.0 Acres · Zoned CR-3 · Est. $480K',owner:'Owner: Rodriguez Family Trust · Tracing...',score:'high',pos:{top:'30%',left:'40%'},heat:'hot'},
+    {addr:'7200 S Kolb Rd',type:'Warehouse · Not Listed',meta:'3,500 SF · 2.1 Acres · Zoned I-2 · Est. $510K',owner:'Owner: Legacy Holdings AZ (traced)',score:'med',pos:{top:'65%',left:'68%'},heat:'warm'},
+    {addr:'1560 W Grant Rd',type:'Retail · Not Listed',meta:'2,100 SF · 0.8 Acres · Zoned C-2 · Est. $380K',owner:'Owner: Pending trace',score:'med',pos:{top:'48%',left:'28%'},heat:'warm'},
+    {addr:'3300 N Flowing Wells',type:'Mixed Use · Not Listed',meta:'2,400 SF · 1.1 Acres · Zoned MX · Est. $440K',owner:'Owner: Williams Properties LLC',score:'low',pos:{top:'22%',left:'35%'},heat:'cold'},
+  ];
+  
+  document.getElementById('resultCount').textContent = results.length + ' results';
+  document.getElementById('resultList').innerHTML = results.map((r,i) => `
+    <div class="result-card ${i===0?'sel':''}" onclick="document.querySelectorAll('.result-card').forEach(el=>el.classList.remove('sel'));this.classList.add('sel')">
+      <div class="rc-top">
+        <div><div class="rc-addr">${r.addr}</div><div class="rc-type">${r.type}</div></div>
+        <span class="match-pill ${r.score==='high'?'mp-high':'mp-med'}">${r.score.toUpperCase()}</span>
+      </div>
+      <div class="rc-meta">${r.meta}</div>
+      <div class="rc-owner">${r.owner}</div>
+      <div class="rc-btns">
+        <div class="rc-btn rcb-p" onclick="alert('AI drafting pitch email:\\n\\'I have a buyer who is specifically looking for a property like yours...\\' — Kameron')">Draft Pitch</div>
+        <div class="rc-btn rcb-s" onclick="alert('Redirecting to Owner Finder for '+this.closest('.result-card').querySelector('.rc-addr').textContent)">Trace Owner</div>
+      </div>
+    </div>`).join('');
+  
+  // Add markers to map
+  const mapArea = document.getElementById('mapArea');
+  document.querySelectorAll('.marker').forEach(m=>m.remove());
+  results.forEach(r => {
+    const m = document.createElement('div');
+    m.className = `marker ${r.heat}`;
+    m.style.top = r.pos.top; m.style.left = r.pos.left;
+    m.title = r.addr;
+    m.onclick = () => alert(r.addr + '\n' + r.meta);
+    mapArea.appendChild(m);
+  });
+  document.querySelector('.map-label').textContent = `Tucson Metro · ${results.length} Off-Market Matches Found`;
+}
+</script>
+</body>
+</html>

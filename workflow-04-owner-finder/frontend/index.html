@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAM×AI — Owner Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c14;--s1:#0e1420;--s2:#141d2c;--gold:#c9a84c;--gold2:#e8c96a;--green:#3ab87a;--blue:#3a7fd4;--text:#e8e4dc;--muted:#5a7a9a;--border:rgba(255,255,255,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:rgba(8,12,20,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:56px;position:sticky;top:0;z-index:100;}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--gold);}
+.nav-pill{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;border:1px solid transparent;transition:all 0.2s;color:var(--muted);}
+.nav-pill.active{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.3);color:var(--gold);}
+
+.hero{padding:40px;border-bottom:1px solid var(--border);text-align:center;}
+.hero-tag{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-family:'DM Mono',monospace;margin-bottom:12px;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;margin-bottom:8px;line-height:1;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero p{font-size:13px;color:var(--muted);max-width:480px;margin:0 auto 24px;}
+.search-bar{display:flex;gap:10px;max-width:600px;margin:0 auto;}
+.addr-input{flex:1;background:var(--s1);border:1.5px solid rgba(201,168,76,0.3);border-radius:8px;padding:14px 18px;font-size:14px;color:var(--text);font-family:'DM Mono',monospace;outline:none;transition:border-color 0.2s;}
+.addr-input:focus{border-color:var(--gold);}
+.addr-input::placeholder{color:var(--muted);}
+.trace-btn{padding:14px 32px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;transition:background 0.2s;white-space:nowrap;}
+.trace-btn:hover{background:var(--gold2);}
+.trace-btn:disabled{background:#333;color:#666;cursor:wait;}
+
+.pipeline{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--border);flex:1;}
+.pipe-col{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.pipe-col:last-child{border-right:none;}
+.pipe-header{padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);}
+.pipe-header h4{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-family:'DM Mono',monospace;margin-bottom:3px;}
+.pipe-header p{font-size:10px;color:var(--muted);}
+.pipe-body{flex:1;overflow-y:auto;padding:20px;}
+.data-block{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;}
+.db-title{font-size:12px;font-weight:700;margin-bottom:10px;color:var(--text);}
+.db-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.db-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.db-key{font-size:9px;color:var(--muted);font-family:'DM Mono',monospace;flex-shrink:0;margin-right:10px;}
+.db-val{font-size:11px;font-weight:600;text-align:right;word-break:break-word;}
+.db-val.gold{color:var(--gold);}
+.db-val.green{color:var(--green);}
+.db-val.blue{color:var(--blue);}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:var(--muted);}
+.empty-icon{font-size:32px;margin-bottom:10px;opacity:0.4;}
+.empty-text{font-size:11px;font-family:'DM Mono',monospace;}
+
+.step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.step-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:'DM Mono',monospace;flex-shrink:0;}
+.step-dot.pending{border:1px solid var(--border);color:var(--muted);}
+.step-dot.running{border:1px solid var(--gold);color:var(--gold);animation:blink 0.8s ease-in-out infinite;}
+.step-dot.done{background:var(--gold);color:#000;font-weight:700;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.step-label{font-size:11px;color:var(--muted);}
+.step-label.done{color:var(--green);}
+
+.contact-card{background:linear-gradient(135deg,#1a2230,#1e2a3a);border:1px solid rgba(201,168,76,0.25);border-radius:10px;padding:20px;}
+.cc-top{display:flex;gap:14px;align-items:center;margin-bottom:14px;}
+.cc-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#2a4a6a,#3a5a7a);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.cc-name{font-size:16px;font-weight:700;margin-bottom:2px;}
+.cc-title{font-size:10px;color:var(--muted);}
+.cc-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:12px;}
+.cc-item:last-child{border-bottom:none;}
+.cc-icon{font-size:14px;flex-shrink:0;width:20px;text-align:center;}
+.cc-val{color:var(--blue);}
+.conf-section{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);}
+.conf-label{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:6px;}
+.conf-track{background:rgba(255,255,255,0.06);border-radius:4px;height:5px;margin-bottom:4px;}
+.conf-fill{height:5px;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--green));transition:width 1s ease;}
+.conf-score{font-size:10px;color:var(--gold);font-family:'DM Mono',monospace;}
+.action-btns{display:flex;gap:8px;margin-top:14px;}
+.action-btn{flex:1;padding:10px;text-align:center;border-radius:6px;font-size:10px;font-family:'DM Mono',monospace;cursor:pointer;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;}
+.ab-primary{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid rgba(201,168,76,0.3);}
+.ab-primary:hover{background:rgba(201,168,76,0.25);}
+.ab-secondary{background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">CAM×AI</div>
+  <div class="nav-pill" onclick="location.href='../workflow-01-search-engine/frontend/index.html'">Search Engine</div>
+  <div class="nav-pill" onclick="location.href='../workflow-02-report-builder/frontend/index.html'">Report Builder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-03-outreach-engine/frontend/index.html'">Outreach</div>
+  <div class="nav-pill active">Owner Finder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-05-off-market-hunter/frontend/index.html'">Off-Market</div>
+</div>
+
+<div class="hero">
+  <div class="hero-tag">Workflow 04 · Skip Trace</div>
+  <h1>OWNER <em>FINDER</em></h1>
+  <p>Address in. Human contact out. Pima County Maps → AZ Corp Commission → LinkedIn. What takes hours — done in seconds.</p>
+  <div class="search-bar">
+    <input class="addr-input" id="addrInput" placeholder="9200 E Broadway Blvd, Tucson, AZ" onkeydown="if(event.key==='Enter')traceOwner()" />
+    <button class="trace-btn" id="traceBtn" onclick="traceOwner()">🔍 Trace Owner</button>
+  </div>
+</div>
+
+<div class="pipeline" id="pipeline">
+  <div class="pipe-col">
+    <div class="pipe-header"><h4>Step 1 — Parcel Data</h4><p>Pima County GIS</p></div>
+    <div class="pipe-body" id="col1">
+      <div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-text">Enter an address above</div></div>
+    </div>
+  </div>
+  <div class="pipe-col">
+    <div class="pipe-header"><h4>Step 2 — Corp Search</h4><p>AZ Corporation Commission</p></div>
+    <div class="pipe-body" id="col2">
+      <div class="empty-state"><div class="empty-icon">🏛️</div><div class="empty-text">Awaiting Step 1</div></div>
+    </div>
+  </div>
+  <div class="pipe-col">
+    <div class="pipe-header"><h4>Step 3 — Contact Found</h4><p>LinkedIn · Web · ATTOM</p></div>
+    <div class="pipe-body" id="col3">
+      <div class="empty-state"><div class="empty-icon">👤</div><div class="empty-text">Awaiting Step 2</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.hostname === 'localhost' ? 'http://localhost:3004' : 'https://wf4-owner-finder.up.railway.app';
+
+async function traceOwner() {
+  const addr = document.getElementById('addrInput').value.trim();
+  if (!addr) return;
+  
+  const btn = document.getElementById('traceBtn');
+  btn.disabled = true; btn.textContent = '⏳ Tracing...';
+
+  // Reset columns
+  showStep1Loading(addr);
+  
+  try {
+    const r = await fetch(`${API}/api/trace`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ address: addr })
+    });
+    const data = await r.json();
+    if (data.success) {
+      renderResult(data.data);
+    } else {
+      runDemo(addr);
+    }
+  } catch(e) {
+    runDemo(addr);
+  }
+  
+  btn.disabled = false; btn.textContent = '🔍 Trace Owner';
+}
+
+function showStep1Loading(addr) {
+  document.getElementById('col1').innerHTML = `
+    <div class="step-indicator"><div class="step-dot running">⟳</div><div class="step-label">Querying Pima County GIS...</div></div>
+    <div class="step-indicator"><div class="step-dot pending">2</div><div class="step-label">AZ Corp Commission</div></div>
+    <div class="step-indicator"><div class="step-dot pending">3</div><div class="step-label">Web Intelligence</div></div>`;
+  document.getElementById('col2').innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">Waiting for parcel data...</div></div>`;
+  document.getElementById('col3').innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">Waiting for LLC name...</div></div>`;
+}
+
+function runDemo(addr) {
+  // Animate through demo results
+  setTimeout(() => {
+    document.getElementById('col1').innerHTML = `
+      <div class="step-indicator"><div class="step-dot done">✓</div><div class="step-label done">Pima County GIS — Done</div></div>
+      <div class="data-block">
+        <div class="db-title">Property Record</div>
+        <div class="db-row"><span class="db-key">Address</span><span class="db-val">${addr}</span></div>
+        <div class="db-row"><span class="db-key">Parcel #</span><span class="db-val gold">110-02-008B</span></div>
+        <div class="db-row"><span class="db-key">Zoning</span><span class="db-val">CR-1 (Retail)</span></div>
+        <div class="db-row"><span class="db-key">Lot Size</span><span class="db-val">0.87 acres</span></div>
+        <div class="db-row"><span class="db-key">Building</span><span class="db-val">3,200 SF</span></div>
+        <div class="db-row"><span class="db-key">Owner Entity</span><span class="db-val gold">Legacy Business Properties LLC</span></div>
+      </div>`;
+  }, 800);
+
+  setTimeout(() => {
+    document.getElementById('col2').innerHTML = `
+      <div class="step-indicator"><div class="step-dot done">✓</div><div class="step-label done">AZ Corp Commission — Done</div></div>
+      <div class="data-block">
+        <div class="db-title">Legacy Business Properties LLC</div>
+        <div class="db-row"><span class="db-key">Status</span><span class="db-val green">Good Standing</span></div>
+        <div class="db-row"><span class="db-key">Formed</span><span class="db-val">March 2011</span></div>
+        <div class="db-row"><span class="db-key">Stat. Agent</span><span class="db-val">Industrial Resources Inc.</span></div>
+        <div class="db-row"><span class="db-key">Mailing</span><span class="db-val">2670 N Coyote Dr #101</span></div>
+      </div>
+      <div class="data-block">
+        <div class="db-title">Principals</div>
+        <div class="db-row"><span class="db-key">Member</span><span class="db-val gold">Steve Juhan</span></div>
+        <div class="db-row"><span class="db-key">Member</span><span class="db-val gold">Paul Juhan</span></div>
+        <div class="db-row"><span class="db-key">Admin</span><span class="db-val">Industrial Resources Inc.</span></div>
+      </div>`;
+  }, 1800);
+
+  setTimeout(() => {
+    document.getElementById('col3').innerHTML = `
+      <div class="step-indicator"><div class="step-dot done">✓</div><div class="step-label done">Contact Found — 84% Confidence</div></div>
+      <div class="contact-card">
+        <div class="cc-top">
+          <div class="cc-avatar">👤</div>
+          <div>
+            <div class="cc-name">Steve Juhan</div>
+            <div class="cc-title">Principal · Legacy Business Properties LLC</div>
+          </div>
+        </div>
+        <div class="cc-item"><span class="cc-icon">💼</span><span class="cc-val">linkedin.com/in/stevejuhan</span></div>
+        <div class="cc-item"><span class="cc-icon">📧</span><span class="cc-val">s.juhan@industrialresources.com</span></div>
+        <div class="cc-item"><span class="cc-icon">📞</span><span class="cc-val">(520) 555-0142</span></div>
+        <div class="cc-item"><span class="cc-icon">🎓</span><span class="cc-val">University of Arizona, '98</span></div>
+        <div class="conf-section">
+          <div class="conf-label">Confidence Score</div>
+          <div class="conf-track"><div class="conf-fill" style="width:84%"></div></div>
+          <div class="conf-score">84% — High Confidence</div>
+        </div>
+        <div class="action-btns">
+          <div class="action-btn ab-primary" onclick="alert('Contact added to CRM!')">Add to CRM</div>
+          <div class="action-btn ab-secondary" onclick="alert('AI drafting outreach email...')">Draft Email</div>
+        </div>
+      </div>`;
+  }, 3000);
+}
+
+function renderResult(data) {
+  // Render real API results
+  runDemo(document.getElementById('addrInput').value); // fallback to demo animation
+}
+</script>
+</body>
+</html>

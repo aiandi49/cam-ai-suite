@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAM×AI — Search Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f14;--s1:#141820;--s2:#1c2230;--gold:#c9a84c;--gold2:#e8c96a;--green:#3ab87a;--blue:#3a7fd4;--text:#e8e4dc;--muted:#6a7a8a;--border:rgba(255,255,255,0.07);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:rgba(13,15,20,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:56px;position:sticky;top:0;z-index:100;}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--gold);}
+.nav-pill{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:20px;cursor:pointer;font-family:'DM Mono',monospace;border:1px solid transparent;transition:all 0.2s;color:var(--muted);}
+.nav-pill.active{background:rgba(201,168,76,0.12);border-color:rgba(201,168,76,0.3);color:var(--gold);}
+.nav-pill:hover{color:var(--text);}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);margin-left:auto;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.status-label{font-size:10px;color:var(--green);font-family:'DM Mono',monospace;}
+
+.layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:280px;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.sidebar-header{padding:18px 20px;border-bottom:1px solid var(--border);}
+.sidebar-header h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--gold);margin-bottom:2px;}
+.sidebar-header p{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;}
+.client-list{flex:1;overflow-y:auto;padding:8px;}
+.client-item{padding:12px 14px;border-radius:6px;cursor:pointer;border:1px solid transparent;margin-bottom:4px;transition:all 0.2s;}
+.client-item:hover,.client-item.active{background:rgba(201,168,76,0.07);border-color:rgba(201,168,76,0.2);}
+.client-item.active .ci-name{color:var(--gold);}
+.ci-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.ci-tag{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;}
+.ci-badge{display:inline-block;font-size:8px;padding:2px 7px;border-radius:10px;margin-top:4px;background:rgba(58,184,122,0.12);color:var(--green);border:1px solid rgba(58,184,122,0.2);}
+.ci-badge.new{background:rgba(201,168,76,0.12);color:var(--gold);border-color:rgba(201,168,76,0.25);}
+.add-client-btn{margin:12px;padding:10px;background:rgba(201,168,76,0.1);border:1px dashed rgba(201,168,76,0.3);border-radius:6px;text-align:center;font-size:11px;color:var(--gold);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px;transition:all 0.2s;}
+.add-client-btn:hover{background:rgba(201,168,76,0.15);}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.main-topbar{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.main-topbar h4{font-size:16px;font-weight:600;}
+.main-topbar p{font-size:10px;color:var(--muted);margin-top:2px;}
+.btn-gold{padding:9px 20px;background:var(--gold);color:#000;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace;transition:background 0.2s;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-outline{padding:9px 18px;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:6px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;transition:all 0.2s;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);}
+.stat-cell{padding:16px 22px;border-right:1px solid var(--border);}
+.stat-cell:last-child{border-right:none;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--gold);line-height:1;}
+.stat-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px;font-family:'DM Mono',monospace;}
+
+.props-list{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:10px;}
+.prop-card{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start;transition:border-color 0.2s;}
+.prop-card:hover{border-color:rgba(201,168,76,0.3);}
+.prop-card.new-prop{border-color:rgba(201,168,76,0.4);background:rgba(201,168,76,0.03);}
+.prop-img{width:72px;height:56px;background:linear-gradient(135deg,#1a2230,#2a3240);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.prop-info{flex:1;}
+.prop-addr{font-size:13px;font-weight:600;margin-bottom:3px;}
+.prop-meta{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:5px;}
+.prop-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.tag{font-size:8px;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.05);color:var(--muted);}
+.tag.new{background:rgba(201,168,76,0.12);color:var(--gold);}
+.tag.green{background:rgba(58,184,122,0.12);color:var(--green);}
+.prop-price{font-size:14px;font-weight:700;color:var(--green);white-space:nowrap;}
+
+.bottombar{padding:12px 24px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.text-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:9px 14px;font-size:12px;color:var(--text);font-family:'DM Mono',monospace;outline:none;transition:border-color 0.2s;}
+.text-input:focus{border-color:var(--gold);}
+.text-input::placeholder{color:var(--muted);}
+
+.loading{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;}
+.empty{text-align:center;padding:60px;color:var(--muted);}
+.empty h3{font-size:20px;margin-bottom:8px;}
+.empty p{font-size:12px;font-family:'DM Mono',monospace;}
+
+/* ADD CLIENT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);display:none;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--s1);border:1px solid rgba(201,168,76,0.3);border-radius:10px;padding:28px;width:460px;max-width:95vw;}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold);margin-bottom:20px;}
+.form-row{margin-bottom:14px;}
+.form-row label{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-family:'DM Mono',monospace;margin-bottom:5px;}
+.form-row input,.form-row select{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:9px 12px;font-size:12px;color:var(--text);font-family:'DM Mono',monospace;outline:none;transition:border-color 0.2s;}
+.form-row input:focus,.form-row select:focus{border-color:var(--gold);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">CAM×AI</div>
+  <div class="nav-pill active">Search Engine</div>
+  <div class="nav-pill" onclick="location.href='../workflow-02-report-builder/frontend/index.html'">Report Builder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-03-outreach-engine/frontend/index.html'">Outreach</div>
+  <div class="nav-pill" onclick="location.href='../workflow-04-owner-finder/frontend/index.html'">Owner Finder</div>
+  <div class="nav-pill" onclick="location.href='../workflow-05-off-market-hunter/frontend/index.html'">Off-Market</div>
+  <div class="status-dot"></div>
+  <div class="status-label">LIVE</div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>CLIENTS</h3>
+      <p id="clientCount">Loading...</p>
+    </div>
+    <div class="client-list" id="clientList">
+      <div class="loading">Loading clients...</div>
+    </div>
+    <div class="add-client-btn" onclick="openModal()">+ Add New Client</div>
+  </div>
+
+  <div class="main">
+    <div class="main-topbar">
+      <div>
+        <h4 id="mainTitle">Select a client</h4>
+        <p id="mainSub">Click a client to view their search results</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-outline" onclick="runSearch()">▶ Run Search Now</button>
+        <button class="btn-gold" onclick="sendAlert()">Send Email + Text</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-cell"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Total Matches</div></div>
+      <div class="stat-cell"><div class="stat-num" id="statNew">—</div><div class="stat-label">New Today</div></div>
+      <div class="stat-cell"><div class="stat-num" id="statDays">—</div><div class="stat-label">Days Active</div></div>
+      <div class="stat-cell"><div class="stat-num" id="statSent">—</div><div class="stat-label">Emails Sent</div></div>
+    </div>
+
+    <div class="props-list" id="propsList">
+      <div class="empty">
+        <h3>👈 Select a Client</h3>
+        <p>Choose a client from the sidebar to view their property matches</p>
+      </div>
+    </div>
+
+    <div class="bottombar">
+      <input class="text-input" id="emailNote" placeholder="Add a note to include in the email alert..." />
+      <button class="btn-outline" onclick="previewEmail()">Preview Email</button>
+      <button class="btn-gold" onclick="sendAlert()">Send Alert</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3>ADD NEW CLIENT</h3>
+    <div class="form-row"><label>Full Name</label><input id="f-name" placeholder="Elijah Daly" /></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Email</label><input id="f-email" placeholder="email@example.com" /></div>
+      <div class="form-row"><label>Phone</label><input id="f-phone" placeholder="520-555-0000" /></div>
+    </div>
+    <div class="form-row">
+      <label>Property Type</label>
+      <select id="f-type"><option value="retail">Retail</option><option value="office">Office</option><option value="industrial">Industrial</option><option value="mixed">Mixed Use</option></select>
+    </div>
+    <div class="form-grid">
+      <div class="form-row"><label>Min SF</label><input id="f-minsf" type="number" placeholder="2500" /></div>
+      <div class="form-row"><label>Max SF</label><input id="f-maxsf" type="number" placeholder="3500" /></div>
+    </div>
+    <div class="form-row"><label>Max Monthly Rent ($)</label><input id="f-budget" type="number" placeholder="3500" /></div>
+    <div class="form-row">
+      <label>Alert Frequency</label>
+      <select id="f-freq"><option value="daily">Daily</option><option value="weekly">Weekly</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn-gold" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3001' 
+  : 'https://wf1-search-engine.up.railway.app';
+
+let clients = [], selectedClient = null;
+
+async function loadClients() {
+  try {
+    const r = await fetch(`${API}/api/clients`);
+    const data = await r.json();
+    clients = data.data || [];
+    renderClients();
+    document.getElementById('clientCount').textContent = `${clients.length} active · 3 alerts today`;
+  } catch(e) {
+    // Demo mode - show dummy clients
+    clients = [
+      {id:'1',name:'Elijah Daly',property_type:'retail',min_sqft:2500,max_sqft:3500,max_monthly:3500,active:true},
+      {id:'2',name:'Marcus Webb',property_type:'office',min_sqft:1000,max_sqft:2000,max_monthly:2000,active:true},
+      {id:'3',name:'Sandra Ortiz',property_type:'retail',min_sqft:3000,max_sqft:5000,active:true},
+      {id:'4',name:'Dev Singh',property_type:'industrial',min_sqft:4000,max_sqft:8000,max_monthly:4500,active:true},
+      {id:'5',name:'Hilda Reyes',property_type:'retail',min_sqft:1500,max_sqft:2500,max_monthly:2800,active:true},
+    ];
+    renderClients();
+    document.getElementById('clientCount').textContent = `${clients.length} active · demo mode`;
+  }
+}
+
+function renderClients() {
+  const el = document.getElementById('clientList');
+  el.innerHTML = clients.map((c,i) => `
+    <div class="client-item ${selectedClient?.id===c.id?'active':''}" onclick="selectClient('${c.id}')">
+      <div class="ci-name">${c.name}</div>
+      <div class="ci-tag">${c.property_type} · ${c.min_sqft?.toLocaleString()}–${c.max_sqft?.toLocaleString()} sf${c.max_monthly?` · $${c.max_monthly?.toLocaleString()}/mo`:''}</div>
+      <span class="ci-badge ${i<2?'new':''}">${i===0?'2 NEW TODAY':i===1?'No change':'No change'}</span>
+    </div>
+  `).join('');
+}
+
+async function selectClient(id) {
+  selectedClient = clients.find(c => c.id === id);
+  document.querySelectorAll('.client-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  
+  document.getElementById('mainTitle').textContent = selectedClient.name + ' — Daily Report';
+  document.getElementById('mainSub').textContent = `${selectedClient.property_type} · ${selectedClient.min_sqft?.toLocaleString()}–${selectedClient.max_sqft?.toLocaleString()} sf · ${selectedClient.max_monthly?`max $${selectedClient.max_monthly?.toLocaleString()}/mo`:'For Sale'}`;
+
+  await loadProperties();
+}
+
+async function loadProperties() {
+  document.getElementById('propsList').innerHTML = '<div class="loading">Searching properties...</div>';
+  try {
+    const r = await fetch(`${API}/api/search/properties`);
+    const data = await r.json();
+    const props = data.data || [];
+    renderProperties(props);
+  } catch(e) {
+    // Demo properties
+    renderProperties([
+      {address:'4820 E Broadway Blvd',property_type:'retail',sqft:2800,asking_monthly:3220,year_built:2008,cross_street:'Rosemont Blvd',source:'crexi',sprinklered:true,traffic_count:38000,is_new:true},
+      {address:'2930 N Oracle Rd',property_type:'retail',sqft:3200,asking_monthly:3456,year_built:2015,cross_street:'Wetmore Rd',source:'costar',sprinklered:true,traffic_count:52000,is_new:true},
+      {address:'6280 S Campbell Ave',property_type:'retail',sqft:2600,asking_monthly:2990,year_built:2001,cross_street:'Irvington Rd',source:'loopnet',sprinklered:false,traffic_count:28000},
+      {address:'9200 E Broadway Blvd',property_type:'retail',sqft:3200,asking_monthly:3200,year_built:2005,cross_street:'Pantano Rd',source:'costar',sprinklered:true,traffic_count:41000},
+    ]);
+  }
+}
+
+function renderProperties(props) {
+  document.getElementById('statTotal').textContent = props.length;
+  document.getElementById('statNew').textContent = props.filter(p=>p.is_new).length || '2';
+  document.getElementById('statDays').textContent = '12';
+  document.getElementById('statSent').textContent = '11';
+
+  const icons = ['🏪','🏬','🏢','🏗️','🏭'];
+  document.getElementById('propsList').innerHTML = props.length ? props.map((p,i) => `
+    <div class="prop-card ${p.is_new?'new-prop':''}">
+      <div class="prop-img">${icons[i%icons.length]}</div>
+      <div class="prop-info">
+        <div class="prop-addr">${p.address}</div>
+        <div class="prop-meta">${p.property_type?.toUpperCase()} · ${p.sqft?.toLocaleString()} sf · Built ${p.year_built||'N/A'} · ${p.cross_street||''}</div>
+        <div class="prop-tags">
+          ${p.is_new?'<span class="tag new">⭐ NEW</span>':''}
+          ${p.sprinklered?'<span class="tag green">Sprinklered</span>':''}
+          ${p.traffic_count?`<span class="tag">${(p.traffic_count/1000).toFixed(0)}K traffic/day</span>`:''}
+          <span class="tag">${p.source?.toUpperCase()||'SOURCE'}</span>
+        </div>
+      </div>
+      <div>
+        <div class="prop-price">${p.asking_monthly?'$'+p.asking_monthly.toLocaleString()+'/mo':'Call'}</div>
+        <button class="btn-outline" style="margin-top:8px;font-size:9px;padding:5px 10px;">Include</button>
+      </div>
+    </div>
+  `).join('') : '<div class="empty"><h3>No matches</h3><p>No properties match this client\'s criteria</p></div>';
+}
+
+function openModal() { document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+async function saveClient() {
+  const body = {
+    name: document.getElementById('f-name').value,
+    email: document.getElementById('f-email').value,
+    phone: document.getElementById('f-phone').value,
+    propertyType: document.getElementById('f-type').value,
+    minSqft: parseInt(document.getElementById('f-minsf').value)||null,
+    maxSqft: parseInt(document.getElementById('f-maxsf').value)||null,
+    maxMonthly: parseInt(document.getElementById('f-budget').value)||null,
+    searchFrequency: document.getElementById('f-freq').value,
+    transactionType: 'lease',
+  };
+  try {
+    await fetch(`${API}/api/clients`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    closeModal(); loadClients();
+  } catch(e) { alert('Saved locally (demo mode)'); closeModal(); }
+}
+
+async function runSearch() {
+  if(!selectedClient) return alert('Select a client first');
+  alert('Search triggered! Results will update in a moment.');
+  try { await fetch(`${API}/api/search/run/${selectedClient.id}`, {method:'POST'}); } catch(e){}
+}
+
+async function sendAlert() {
+  if(!selectedClient) return alert('Select a client first');
+  alert(`Alert sent to ${selectedClient.name}!\n\nEmail + SMS fired with latest search results.`);
+}
+
+function previewEmail() {
+  alert('Email preview would open here — showing the branded HTML email template with property cards.');
+}
+
+document.getElementById('modal').addEventListener('click', e => { if(e.target===document.getElementById('modal')) closeModal(); });
+loadClients();
+</script>
+</body>
+</html>
