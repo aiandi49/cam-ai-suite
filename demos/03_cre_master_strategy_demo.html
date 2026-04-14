@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRE×AI — Master Build Strategy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c10;
+  --s1: #0d1318;
+  --s2: #121a22;
+  --s3: #18222c;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --gold-dim: rgba(201,168,76,0.1);
+  --gold-glow: rgba(201,168,76,0.06);
+  --green: #3ab87a;
+  --green-dim: rgba(58,184,122,0.1);
+  --red: #e05a5a;
+  --red-dim: rgba(224,90,90,0.1);
+  --amber: #e8a030;
+  --amber-dim: rgba(232,160,48,0.1);
+  --blue: #4a9fd4;
+  --blue-dim: rgba(74,159,212,0.1);
+  --purple: #a07ad4;
+  --purple-dim: rgba(160,122,212,0.1);
+  --text: #e8e4dc;
+  --muted: #5a6a7a;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(201,168,76,0.18);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 160px;
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap { position:relative; z-index:1; max-width: 1080px; margin: 0 auto; padding: 0 28px 100px; }
+
+/* ── HERO ── */
+.hero {
+  padding: 60px 0 48px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 64px;
+}
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.hero-eyebrow::before { content:''; display:block; width:32px; height:1px; background:var(--gold); }
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 8vw, 96px);
+  line-height: 0.92;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+}
+.hero h1 em { color: var(--gold); font-style: normal; }
+.hero-sub {
+  max-width: 680px;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* ── STATUS GRID ── */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 64px;
+}
+.status-cell {
+  background: var(--s1);
+  padding: 24px;
+}
+.sc-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+.sc-val { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1; color: var(--gold); }
+.sc-sub { font-size: 10px; color: var(--muted); margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.section-title h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+}
+.section-title h2 em { color: var(--gold); font-style: normal; }
+.section-title .stline { flex:1; height:1px; background: linear-gradient(90deg, var(--border2), transparent); }
+.section-tag {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  padding: 4px 10px;
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  background: var(--gold-glow);
+  white-space: nowrap;
+}
+
+/* ── AUDIT ALIGNMENT ── */
+.audit-map {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 64px;
+}
+.audit-header {
+  background: var(--s2);
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.audit-header h3 { font-size: 14px; font-weight: 700; }
+.audit-header p { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.audit-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 120px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.audit-row:hover { background: rgba(255,255,255,0.02); }
+.audit-row:last-child { border-bottom: none; }
+.audit-row.header-row {
+  background: rgba(255,255,255,0.02);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+.ar-cell { padding: 16px 20px; font-size: 12px; border-right: 1px solid var(--border); }
+.ar-cell:last-child { border-right: none; }
+.ar-step { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--gold); line-height: 1; }
+.ar-step-label { font-size: 8px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+.ar-name { font-weight: 600; font-size: 13px; margin-bottom: 3px; }
+.ar-desc { font-size: 10.5px; color: var(--muted); line-height: 1.6; }
+.ar-cam { font-size: 11px; color: #aaa; line-height: 1.6; }
+.ar-cam strong { color: var(--text); }
+.status-pill {
+  display: inline-block;
+  font-size: 9px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.sp-now { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+.sp-next { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(74,159,212,0.2); }
+.sp-later { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+.sp-done { background: var(--green-dim); color: var(--green); border: 1px solid rgba(58,184,122,0.2); }
+.sp-skip { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(160,122,212,0.2); }
+
+/* ── NOW / DO FIRST BLOCK ── */
+.do-now {
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 64px;
+}
+.do-now-header {
+  background: linear-gradient(90deg, rgba(201,168,76,0.12), rgba(201,168,76,0.02));
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.do-now-header .icon { font-size: 32px; }
+.do-now-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--gold); }
+.do-now-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.do-now-body { display: grid; grid-template-columns: 1fr 1fr; }
+.do-col {
+  padding: 28px 32px;
+  border-right: 1px solid var(--border);
+}
+.do-col:last-child { border-right: none; }
+.do-col h4 {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.do-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.do-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.do-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--gold);
+  flex-shrink: 0;
+  font-family: 'DM Mono', monospace;
+}
+.do-num.filled { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 700; }
+.do-text { flex:1; }
+.do-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.do-sub { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.do-tag { font-size: 9px; color: var(--green); font-family: 'DM Mono', monospace; margin-top: 4px; }
+
+/* ── API CHECKLIST ── */
+.api-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 64px;
+}
+.api-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px 24px;
+  transition: border-color 0.2s;
+}
+.api-card:hover { border-color: rgba(201,168,76,0.3); }
+.api-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.api-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.api-url { font-size: 10px; color: var(--blue); font-family: 'DM Mono', monospace; }
+.api-wf { font-size: 9px; color: var(--gold); font-family: 'DM Mono', monospace; padding: 3px 8px; border: 1px solid var(--border2); border-radius: 10px; white-space: nowrap; }
+.api-steps { display: flex; flex-direction: column; gap: 6px; }
+.api-step { font-size: 11px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+.api-step::before { content:'→'; color: var(--gold); font-size: 10px; flex-shrink:0; margin-top: 2px; }
+.api-cost { font-size: 10px; color: var(--amber); font-family: 'DM Mono', monospace; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.api-cost span { color: var(--muted); }
+.api-card.have { border-color: rgba(58,184,122,0.25); }
+.api-card.have .api-name::after { content: ' ✓'; color: var(--green); font-size: 11px; }
+
+/* ── INFRA TABLE ── */
+.infra-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 64px;
+}
+.infra-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.infra-card-header {
+  background: var(--s2);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.infra-card-header h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.infra-card-header p { font-size: 10px; color: var(--muted); }
+.infra-card-body { padding: 16px 20px; }
+.infra-item { font-size: 11px; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.infra-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.infra-item strong { color: var(--text); font-size: 12px; }
+.infra-cost { font-family: 'DM Mono', monospace; color: var(--amber); font-size: 10px; }
+
+/* ── WHAT CAN WE BUILD NOW ── */
+.build-now-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 64px;
+}
+.build-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.build-card::before {
+  content:'';
+  position:absolute;
+  top:0; left:0;
+  width:3px; height:100%;
+}
+.build-card.can::before { background: var(--green); }
+.build-card.partial::before { background: var(--amber); }
+.build-card.blocked::before { background: var(--red); }
+.build-wf { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+.build-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.build-items { display: flex; flex-direction: column; gap: 5px; }
+.build-item { font-size: 11px; color: var(--muted); display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; }
+.bi-can { color: var(--green); }
+.bi-partial { color: var(--amber); }
+.bi-blocked { color: var(--red); }
+.build-blocker { font-size: 10px; color: var(--red); font-family: 'DM Mono', monospace; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+
+/* ── SPRINT PLAN ── */
+.sprint-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 64px; }
+.sprint-row {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr 140px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.sprint-row:hover { border-color: rgba(201,168,76,0.2); }
+.sprint-row.active { border-color: rgba(201,168,76,0.35); background: rgba(201,168,76,0.03); }
+.sr-cell { padding: 16px 20px; border-right: 1px solid var(--border); }
+.sr-cell:last-child { border-right: none; }
+.sr-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
+.sr-week { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); line-height: 1; }
+.sr-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.sr-items { font-size: 11px; color: var(--muted); line-height: 1.7; }
+.sr-deliverable { font-size: 11px; color: var(--green); font-family: 'DM Mono', monospace; line-height: 1.7; }
+.sr-audit { font-size: 10px; color: var(--blue); font-family: 'DM Mono', monospace; margin-top: 4px; }
+
+/* ── TECH DECISION ── */
+.tech-decision {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 64px;
+}
+.td-header {
+  background: var(--s2);
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+}
+.td-header h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.td-header p { font-size: 11px; color: var(--muted); }
+.td-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+.td-col {
+  padding: 24px 28px;
+  border-right: 1px solid var(--border);
+}
+.td-col:last-child { border-right: none; }
+.td-layer { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-family: 'DM Mono', monospace; margin-bottom: 16px; }
+.td-item { margin-bottom: 12px; }
+.td-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.td-reason { font-size: 10.5px; color: var(--muted); line-height: 1.6; }
+.td-why { font-size: 10px; color: var(--green); font-family: 'DM Mono', monospace; margin-top: 3px; }
+
+/* ── CALL TO ACTION ── */
+.cta-block {
+  background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.02) 100%);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 40px 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+}
+.cta-block h3 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--gold); margin-bottom: 8px; line-height: 1; }
+.cta-block p { font-size: 13px; color: var(--muted); max-width: 500px; line-height: 1.7; }
+.cta-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.cta-btn {
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cta-btn.primary { background: var(--gold); color: #000; border: none; }
+.cta-btn.secondary { background: transparent; color: var(--gold); border: 1px solid var(--border2); }
+
+/* ── SECTION SPACING ── */
+.section { margin-bottom: 64px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .audit-row { grid-template-columns: 60px 1fr 120px; }
+  .audit-row .ar-cell:nth-child(3) { display: none; }
+  .do-now-body { grid-template-columns: 1fr; }
+  .api-grid { grid-template-columns: 1fr; }
+  .infra-grid { grid-template-columns: 1fr 1fr; }
+  .build-now-grid { grid-template-columns: 1fr; }
+  .sprint-row { grid-template-columns: 80px 1fr; }
+  .sprint-row .sr-cell:nth-child(3), .sprint-row .sr-cell:last-child { display: none; }
+  .td-grid { grid-template-columns: 1fr; }
+  .cta-block { grid-template-columns: 1fr; }
+  .status-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .wrap { padding: 16px 12px; }
+  .hero { padding: 32px 16px 28px; }
+  .hero h1 { font-size: 48px; }
+  .hero-eyebrow { font-size: 9px; }
+  .section { margin-bottom: 40px; }
+  .section-header { padding: 14px 16px; }
+  .section-tag { font-size: 8px; }
+  .status-grid { grid-template-columns: 1fr; }
+  .audit-row { grid-template-columns: 48px 1fr; }
+  .audit-row .ar-cell:nth-child(3), .audit-row .ar-cell:nth-child(4) { display: none; }
+  .infra-grid { grid-template-columns: 1fr; }
+  .sprint-row { grid-template-columns: 60px 1fr; }
+  .cta-block { padding: 24px 16px; }
+  .cta-block h2 { font-size: 32px; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.wrap > * { animation: fadeUp 0.5s ease both; }
+.wrap > *:nth-child(2) { animation-delay: 0.05s; }
+.wrap > *:nth-child(3) { animation-delay: 0.1s; }
+.wrap > *:nth-child(4) { animation-delay: 0.15s; }
+.wrap > *:nth-child(5) { animation-delay: 0.2s; }
+.wrap > *:nth-child(6) { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <div class="hero-eyebrow">Master Build Strategy · CRE×AI Suite</div>
+  <h1>BUILD PLAN<br><em>+ ATTACK</em><br>STRATEGY</h1>
+  <p class="hero-sub">Five workflows. Two phases. One stack. Mapped against the 10-Step Audit Pipeline — so we know exactly where we are, what we build next, what we need to unlock, and what we can ship right now without waiting on anyone.</p>
+</div>
+
+<!-- ═══════ STATUS ═══════ -->
+<div class="status-grid">
+  <div class="status-cell">
+    <div class="sc-label">Workflows Designed</div>
+    <div class="sc-val">5</div>
+    <div class="sc-sub">All scoped + structured</div>
+  </div>
+  <div class="status-cell">
+    <div class="sc-label">Repo Files Created</div>
+    <div class="sc-val">145</div>
+    <div class="sc-sub">Folders, stubs, READMEs</div>
+  </div>
+  <div class="status-cell">
+    <div class="sc-label">APIs We Already Have</div>
+    <div class="sc-val">3</div>
+    <div class="sc-sub">CoStar · Crexi · Anthropic</div>
+  </div>
+  <div class="status-cell">
+    <div class="sc-label">Current Audit Step</div>
+    <div class="sc-val">1→2</div>
+    <div class="sc-sub">Brief done. Entering build.</div>
+  </div>
+</div>
+
+<!-- ═══════ AUDIT ALIGNMENT ═══════ -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-tag">The 10-Step Audit System</div>
+    <h2>WHERE WE <em>STAND</em></h2>
+    <div class="stline"></div>
+  </div>
+
+  <div class="audit-map">
+    <div class="audit-header">
+      <div>
+        <h3>CRE×AI mapped against the 10-Step Audit Pipeline</h3>
+        <p>Your system. Applied to this build. No gas governors.</p>
+      </div>
+    </div>
+
+    <div class="audit-row header-row">
+      <div class="ar-cell">Step</div>
+      <div class="ar-cell">What the Step Is</div>
+      <div class="ar-cell">Where CRE×AI Is Right Now</div>
+      <div class="ar-cell">Status</div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">01</div><div class="ar-step-label">Build Brief</div></div>
+      <div class="ar-cell"><div class="ar-name">App Build Brief</div><div class="ar-desc">Full spec: every feature, route, data relationship. What "done" means. No stubs, no shortcuts.</div></div>
+      <div class="ar-cell"><div class="ar-op"><strong>COMPLETE.</strong> All 5 workflows fully scoped. READMEs written. DB schema defined. Type system created. MVP shells built. The brief IS the repo we just created.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-done">✓ Complete</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">02</div><div class="ar-step-label">Audit Roadmap</div></div>
+      <div class="ar-cell"><div class="ar-name">Gap Analysis</div><div class="ar-desc">What's there, what's missing, violation audit, target architecture, phased implementation plan.</div></div>
+      <div class="ar-cell"><div class="ar-op"><strong>IN PROGRESS.</strong> Architecture decided (Node/Express + Postgres + Claude AI). Gaps identified: API keys, Pima Maps scraper, RE Daily News crawler, email templates. No violations — clean stack from day one.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-now">⚡ Active</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">03</div><div class="ar-step-label">Implementation</div></div>
+      <div class="ar-cell"><div class="ar-name">Build Everything</div><div class="ar-desc">Every feature built, not mocked. Frontend + backend + DB connected end-to-end.</div></div>
+      <div class="ar-cell"><div class="ar-op"><strong>STARTING NOW.</strong> Shells exist. Source stubs written. We build WF1 + WF3 first — the two that generate immediate ROI for the operator. WF2 runs parallel (no new APIs needed).</div></div>
+      <div class="ar-cell"><span class="status-pill sp-now">⚡ Next</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">04</div><div class="ar-step-label">Internal QA</div></div>
+      <div class="ar-cell"><div class="ar-name">Every check passes</div><div class="ar-desc">All pages load. No placeholder data. Loading states. Empty states. Error states. Mobile. Security.</div></div>
+      <div class="ar-cell"><div class="ar-op">After each workflow reaches functional state — we run your QA checklist against it. WF1 first. Every domain: FE, BE, DB, SEC, UX, OPS. No blanks.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-next">Phase 2</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">05</div><div class="ar-step-label">Staging + Human Test</div></div>
+      <div class="ar-cell"><div class="ar-name">Real human, no help</div><div class="ar-desc">Deploy to staging. Real person uses it without guidance. Every confusion logged.</div></div>
+      <div class="ar-cell"><div class="ar-op">The operator is the human tester. Daily use drives the fix list. Staging = Vercel preview branch for frontend, Railway staging service for backend.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-next">Phase 2</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">06</div><div class="ar-step-label">Custom Domain + HTTPS</div></div>
+      <div class="ar-cell"><div class="ar-name">your-cre-platform.app</div><div class="ar-desc">Custom domain, SSL, DNS. Production URL locked in.</div></div>
+      <div class="ar-cell"><div class="ar-op">Vercel handles SSL automatically. Domain: buy <strong>cre-ai.app</strong> or similar via Namecheap ($12/yr). Point DNS. Done in 20 minutes.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-next">Phase 2</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">07</div><div class="ar-step-label">Uptime + Lighthouse</div></div>
+      <div class="ar-cell"><div class="ar-name">Monitoring baseline</div><div class="ar-desc">Uptime alerts. Performance scores. Errors caught before The operator notices.</div></div>
+      <div class="ar-cell"><div class="ar-op">UptimeRobot (free) for uptime pings. Sentry (free tier) for error tracking. Lighthouse CI in GitHub Actions. Set and forget.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-later">Phase 3</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">08</div><div class="ar-step-label">First Real Client</div></div>
+      <div class="ar-cell"><div class="ar-name">Operator IS the client</div><div class="ar-desc">Onboard first real user. Their usage = real QA. Their feedback = roadmap.</div></div>
+      <div class="ar-cell"><div class="ar-op">Operator onboards as User #1. Every search, every report, every alert he runs through the live app. That feedback directly shapes the next sprint.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-later">Phase 3</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">09</div><div class="ar-step-label">PWA → App Store</div></div>
+      <div class="ar-cell"><div class="ar-name">Mobile app launch</div><div class="ar-desc">PWA → Capacitor wrapper → iOS App Store + Google Play.</div></div>
+      <div class="ar-cell"><div class="ar-op">The MVPs already have mobile shells. After WF1+WF3 are live and The operator is using them daily — PWA wrap → Capacitor → submit. Apple Dev: $99/yr. Google Play: $25 one-time.</div></div>
+      <div class="ar-cell"><span class="status-pill sp-later">Phase 4</span></div>
+    </div>
+
+    <div class="audit-row">
+      <div class="ar-cell"><div class="ar-step">10</div><div class="ar-step-label">React Migration</div></div>
+      <div class="ar-cell"><div class="ar-name">Only after PMF</div><div class="ar-desc">Full React + Vite + TypeScript rewrite. Only when the product has proven itself.</div></div>
+      <div class="ar-cell"><div class="ar-op">Your rule. Our rule. We ship the HTML/Node stack first. When The operator has paying clients USING this daily — then we talk React migration. Not before. <strong>The backend and DB survive the migration intact.</strong></div></div>
+      <div class="ar-cell"><span class="status-pill sp-skip">After PMF</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ DO RIGHT NOW ═══════ -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-tag">Immediate Action</div>
+    <h2>WHAT WE <em>BUILD RIGHT NOW</em></h2>
+    <div class="stline"></div>
+  </div>
+
+  <div class="do-now">
+    <div class="do-now-header">
+      <div class="icon">⚡</div>
+      <div>
+        <h3>THIS WEEKEND — BEFORE MONDAY'S MEETING</h3>
+        <p>Everything in this block can be built TODAY with no new API keys. Hit all 5 workflows simultaneously.</p>
+      </div>
+    </div>
+    <div class="do-now-body">
+      <div class="do-col">
+        <h4>Build right now — no blockers</h4>
+
+        <div class="do-item">
+          <div class="do-num filled">1</div>
+          <div class="do-text">
+            <div class="do-title">Full frontend for all 5 workflows</div>
+            <div class="do-sub">Complete React-ready HTML pages: client dashboard, report builder UI, outreach panel, owner finder, off-market map. All 5 are already MVPs — flesh them out with every button, form, and state wired to real API calls.</div>
+            <div class="do-tag">✓ Zero API keys needed · Pure frontend</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num filled">2</div>
+          <div class="do-text">
+            <div class="do-title">Express API server for all 5 workflows</div>
+            <div class="do-sub">All routes stubbed in index.ts already. Flesh out every endpoint with real request validation, real error handling, real response shapes. No mocks — just return empty data cleanly until APIs are wired.</div>
+            <div class="do-tag">✓ Local Postgres already defined in schema.sql</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num filled">3</div>
+          <div class="do-text">
+            <div class="do-title">PostgreSQL DB — fully live locally</div>
+            <div class="do-sub">Run schema.sql. Seed with realistic dummy clients (Elijah Daly, Marcus Webb, etc.) and dummy properties. Every workflow can query real DB rows. No mocks anywhere in the data layer.</div>
+            <div class="do-tag">✓ Schema already written and complete</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num filled">4</div>
+          <div class="do-text">
+            <div class="do-title">WF2 Report Builder — fully functional</div>
+            <div class="do-sub">The AI summaries (Claude), Google Maps links, and PDF generation (Puppeteer) need NO special API negotiation. Just the Anthropic key (already have it) and Google Maps key (free tier, takes 5 minutes). Full branded PDF output THIS weekend.</div>
+            <div class="do-tag">✓ Needs: ANTHROPIC_API_KEY + GOOGLE_MAPS_KEY only</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num filled">5</div>
+          <div class="do-text">
+            <div class="do-title">Email template for WF1 alerts</div>
+            <div class="do-sub">Build the Handlebars email template (daily-alert.html). Beautiful branded HTML email: property cards, photos, price, cross streets, Google Maps link, "Book a Call" CTA. The template is done before the Gmail API is wired.</div>
+            <div class="do-tag">✓ Pure HTML/CSS — no dependencies</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num">6</div>
+          <div class="do-text">
+            <div class="do-title">WF4 Pima Maps + AZ Corp scrapers</div>
+            <div class="do-sub">Playwright scraper for Pima County Assessor and AZ Corporation Commission are public websites — no API key needed. Build the scrapers now. Handle the address normalization quirks documented in the README. These are public data, free access.</div>
+            <div class="do-tag">✓ Public websites — no keys, no cost</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="do-col">
+        <h4>Get this weekend — fast unlocks</h4>
+
+        <div class="do-item">
+          <div class="do-num">A</div>
+          <div class="do-text">
+            <div class="do-title">Gmail OAuth 2.0 Setup</div>
+            <div class="do-sub">Go to console.cloud.google.com → Create project → Enable Gmail API → OAuth 2.0 credentials → get Client ID + Secret + Refresh Token. Takes 20 minutes. Unlocks WF1 email sending + WF3 campaign sending immediately.</div>
+            <div class="do-tag">Free · 20 min setup · Unlocks WF1 + WF3</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num">B</div>
+          <div class="do-text">
+            <div class="do-title">Google Maps API Key</div>
+            <div class="do-sub">console.cloud.google.com → Enable Maps JavaScript API + Maps Static API + Places API. Free tier covers everything we need at The operator's scale. $200/month free credit = thousands of map loads.</div>
+            <div class="do-tag">Free tier · 5 min setup · Unlocks WF2 + WF5</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num">C</div>
+          <div class="do-text">
+            <div class="do-title">Twilio Trial Account</div>
+            <div class="do-sub">twilio.com → sign up → get free trial number ($15 credit). Enough to test all SMS functionality for WF1. Upgrade to paid when The operator goes live ($0.0079/SMS). Takes 10 minutes.</div>
+            <div class="do-tag">$15 free credit · 10 min · Unlocks WF1 SMS</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num">D</div>
+          <div class="do-text">
+            <div class="do-title">Railway — Deploy backend now</div>
+            <div class="do-sub">railway.app → new project → deploy from GitHub → add Postgres plugin (free 500MB). All 5 workflow servers deployed. Auto-deploys on push. $5/mo when you exceed free tier. This is the backend home.</div>
+            <div class="do-tag">Free tier · 15 min · All 5 backends live</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num">E</div>
+          <div class="do-text">
+            <div class="do-title">Vercel — Deploy frontend now</div>
+            <div class="do-sub">vercel.com → import GitHub repo → deploy. Each workflow gets its own preview URL instantly. Production domains added later. Free forever for frontend. This is the frontend home.</div>
+            <div class="do-tag">Free forever · 10 min · All 5 frontends live</div>
+          </div>
+        </div>
+
+        <div class="do-item">
+          <div class="do-num">F</div>
+          <div class="do-text">
+            <div class="do-title">CoStar + Crexi API — Call The operator's reps Monday</div>
+            <div class="do-sub">The operator already has CoStar ($500-600/mo account) and Crexi Pro. One call to each rep: "I need API access." CoStar: contact your account rep directly. Crexi: Settings → API Access (Pro accounts get it). This unlocks WF1, WF2, WF3, WF5.</div>
+            <div class="do-tag">Already paid for · Just needs the API key request</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ WHAT CAN WE BUILD ═══════ -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-tag">Build Status Per Workflow</div>
+    <h2>WHAT'S <em>BUILDABLE NOW</em></h2>
+    <div class="stline"></div>
+  </div>
+  <div class="build-now-grid">
+
+    <div class="build-card can">
+      <div class="build-wf">Workflow 01</div>
+      <div class="build-title">Search & Alert Engine</div>
+      <div class="build-items">
+        <div class="build-item"><span class="bi-can">✓</span> Full frontend dashboard</div>
+        <div class="build-item"><span class="bi-can">✓</span> Client CRUD (DB + API)</div>
+        <div class="build-item"><span class="bi-can">✓</span> Cron scheduler wired</div>
+        <div class="build-item"><span class="bi-can">✓</span> Email template built</div>
+        <div class="build-item"><span class="bi-can">✓</span> SMS sender ready (Twilio)</div>
+        <div class="build-item"><span class="bi-can">✓</span> Diff engine complete</div>
+        <div class="build-item"><span class="bi-partial">~</span> CoStar/Crexi search (needs API keys)</div>
+        <div class="build-item"><span class="bi-partial">~</span> Gmail send (needs OAuth setup)</div>
+      </div>
+      <div class="build-blocker">Blockers: CoStar API key (call rep) · Gmail OAuth (20 min setup)</div>
+    </div>
+
+    <div class="build-card can">
+      <div class="build-wf">Workflow 02</div>
+      <div class="build-title">Report Builder</div>
+      <div class="build-items">
+        <div class="build-item"><span class="bi-can">✓</span> Full builder UI</div>
+        <div class="build-item"><span class="bi-can">✓</span> Puppeteer PDF engine</div>
+        <div class="build-item"><span class="bi-can">✓</span> Claude AI summaries</div>
+        <div class="build-item"><span class="bi-can">✓</span> Google Maps links</div>
+        <div class="build-item"><span class="bi-can">✓</span> Handlebars template</div>
+        <div class="build-item"><span class="bi-can">✓</span> Email send (with Gmail OAuth)</div>
+        <div class="build-item"><span class="bi-partial">~</span> CoStar data pull (needs API key)</div>
+      </div>
+      <div class="build-blocker" style="color:var(--green)">Mostly buildable now — 80% functional without CoStar key</div>
+    </div>
+
+    <div class="build-card can">
+      <div class="build-wf">Workflow 03</div>
+      <div class="build-title">Outreach Engine</div>
+      <div class="build-items">
+        <div class="build-item"><span class="bi-can">✓</span> Flyer upload + Claude vision</div>
+        <div class="build-item"><span class="bi-can">✓</span> Lead list UI</div>
+        <div class="build-item"><span class="bi-can">✓</span> Scoring engine</div>
+        <div class="build-item"><span class="bi-can">✓</span> AI email drafter</div>
+        <div class="build-item"><span class="bi-can">✓</span> RE Daily News crawler (public)</div>
+        <div class="build-item"><span class="bi-partial">~</span> Campaign send (needs Gmail OAuth)</div>
+        <div class="build-item"><span class="bi-partial">~</span> Crexi lease comps (needs API key)</div>
+      </div>
+      <div class="build-blocker" style="color:var(--green)">Claude vision + RE Daily News = 70% functional NOW</div>
+    </div>
+
+    <div class="build-card can">
+      <div class="build-wf">Workflow 04</div>
+      <div class="build-title">Owner Finder</div>
+      <div class="build-items">
+        <div class="build-item"><span class="bi-can">✓</span> Full pipeline UI</div>
+        <div class="build-item"><span class="bi-can">✓</span> Pima Maps scraper (public)</div>
+        <div class="build-item"><span class="bi-can">✓</span> AZ Corp Commission scraper (public)</div>
+        <div class="build-item"><span class="bi-can">✓</span> Claude AI web enrichment</div>
+        <div class="build-item"><span class="bi-can">✓</span> Confidence scoring</div>
+        <div class="build-item"><span class="bi-can">✓</span> Contact card output</div>
+        <div class="build-item"><span class="bi-partial">~</span> ATTOM Data (needs API key $250/mo)</div>
+      </div>
+      <div class="build-blocker" style="color:var(--green)">Steps 1-3 fully buildable NOW — no paid APIs required</div>
+    </div>
+
+    <div class="build-card partial">
+      <div class="build-wf">Workflow 05</div>
+      <div class="build-title">Off-Market Hunter</div>
+      <div class="build-items">
+        <div class="build-item"><span class="bi-can">✓</span> Buyer profile UI + DB</div>
+        <div class="build-item"><span class="bi-can">✓</span> Map view with markers</div>
+        <div class="build-item"><span class="bi-can">✓</span> Scoring + results panel</div>
+        <div class="build-item"><span class="bi-can">✓</span> Claude pitch email drafter</div>
+        <div class="build-item"><span class="bi-can">✓</span> WF4 skip trace integration</div>
+        <div class="build-item"><span class="bi-partial">~</span> Pima parcel DB import (public CSV)</div>
+        <div class="build-item"><span class="bi-blocked">✗</span> CoStar/Crexi listed-check (needs API)</div>
+      </div>
+      <div class="build-blocker">Core matching engine works once parcel CSV is imported (free public data)</div>
+    </div>
+
+    <div class="build-card can">
+      <div class="build-wf">All Workflows</div>
+      <div class="build-title">Infra & Deployment</div>
+      <div class="build-items">
+        <div class="build-item"><span class="bi-can">✓</span> GitHub repo → push now</div>
+        <div class="build-item"><span class="bi-can">✓</span> Railway backend deploy</div>
+        <div class="build-item"><span class="bi-can">✓</span> Vercel frontend deploy</div>
+        <div class="build-item"><span class="bi-can">✓</span> Railway Postgres (free 500MB)</div>
+        <div class="build-item"><span class="bi-can">✓</span> GitHub Actions CI</div>
+        <div class="build-item"><span class="bi-can">✓</span> .env.example for all 5</div>
+        <div class="build-item"><span class="bi-can">✓</span> UptimeRobot monitoring (free)</div>
+      </div>
+      <div class="build-blocker" style="color:var(--green)">100% deployable right now — all infra is free tier to start</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ API CHECKLIST ═══════ -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-tag">API Access Needed</div>
+    <h2>THE <em>UNLOCK LIST</em></h2>
+    <div class="stline"></div>
+  </div>
+  <div class="api-grid">
+
+    <div class="api-card have">
+      <div class="api-card-top">
+        <div><div class="api-name">CoStar API</div><div class="api-url">api.costar.com</div></div>
+        <span class="api-wf">WF1 · WF2 · WF5</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">The operator already pays $500-600/mo for CoStar access</div>
+        <div class="api-step">Call your CoStar account rep: "I need API key access for my account"</div>
+        <div class="api-step">CoStar owns LoopNet — same account gets LoopNet API too</div>
+        <div class="api-step">They may require a signed API agreement — standard, takes a few days</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> Already paying — API access included in enterprise tiers · <span>Timeline:</span> 2-5 business days</div>
+    </div>
+
+    <div class="api-card have">
+      <div class="api-card-top">
+        <div><div class="api-name">Crexi API</div><div class="api-url">api.crexi.com</div></div>
+        <span class="api-wf">WF1 · WF2 · WF3</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">The operator has Crexi Pro — API access is included</div>
+        <div class="api-step">Login to Crexi → Settings → API Access → generate key</div>
+        <div class="api-step">If not visible: call Crexi support, reference Pro account</div>
+        <div class="api-step">Unlocks: property search, lease comps, listing photos</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> Already included in Pro · <span>Timeline:</span> Same day — self-service</div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-card-top">
+        <div><div class="api-name">Gmail OAuth 2.0</div><div class="api-url">console.cloud.google.com</div></div>
+        <span class="api-wf">WF1 · WF2 · WF3</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">Go to Google Cloud Console → New Project → Enable Gmail API</div>
+        <div class="api-step">Create OAuth 2.0 Client ID → download credentials JSON</div>
+        <div class="api-step">Run OAuth flow once to get refresh token (use oauth2.googleapis.com)</div>
+        <div class="api-step">Use The operator's G Suite account as the sender address</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> Free · <span>Timeline:</span> 20 minutes right now</div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-card-top">
+        <div><div class="api-name">Google Maps API</div><div class="api-url">console.cloud.google.com</div></div>
+        <span class="api-wf">WF2 · WF5</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">Google Cloud Console → Enable: Maps JavaScript, Maps Static, Places</div>
+        <div class="api-step">Create API key → restrict to your domain (security best practice)</div>
+        <div class="api-step">$200/month free credit = ~40,000 map loads free per month</div>
+        <div class="api-step">The operator's usage will never exceed the free tier at current scale</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> Free tier ($200 credit/mo) · <span>Timeline:</span> 5 minutes</div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-card-top">
+        <div><div class="api-name">Twilio SMS</div><div class="api-url">twilio.com/console</div></div>
+        <span class="api-wf">WF1</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">Sign up at twilio.com → get Account SID + Auth Token</div>
+        <div class="api-step">Buy a Tucson area code number ($1.15/mo)</div>
+        <div class="api-step">$0.0079 per SMS outbound — 500 clients × daily = ~$4/day max</div>
+        <div class="api-step">Trial gives $15 free credit — enough for full testing</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> ~$4/day at full scale · <span>Timeline:</span> 10 minutes</div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-card-top">
+        <div><div class="api-name">ATTOM Data API</div><div class="api-url">api.attomdata.com</div></div>
+        <span class="api-wf">WF4 · WF5</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">api.attomdata.com → sign up for Basic plan</div>
+        <div class="api-step">Provides: owner name, mailing address, sale history, assessed value</div>
+        <div class="api-step">Supplements Pima Maps + AZ Corp — gives cleaner ownership data</div>
+        <div class="api-step">OPTIONAL: WF4 works without it (Pima+AZ Corp covers most cases)</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> ~$250-300/mo · <span>Timeline:</span> Phase 2 — not required for launch</div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-card-top">
+        <div><div class="api-name">Anthropic (Claude AI)</div><div class="api-url">console.anthropic.com</div></div>
+        <span class="api-wf">WF2 · WF3 · WF4 · WF5</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">console.anthropic.com → API keys → create key → add to all .env files</div>
+        <div class="api-step">Used for: property summaries, flyer reading, email drafting, web search, lead scoring</div>
+        <div class="api-step">claude-sonnet-4 pricing: ~$3/M input tokens, $15/M output — very affordable</div>
+        <div class="api-step">The operator's usage: estimate $20-50/month at full scale</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> ~$20-50/mo · <span>Timeline:</span> Already have this — just copy key to .env files</div>
+    </div>
+
+    <div class="api-card">
+      <div class="api-card-top">
+        <div><div class="api-name">RE² AI (re2.ai)</div><div class="api-url">re2.ai</div></div>
+        <span class="api-wf">WF3</span>
+      </div>
+      <div class="api-steps">
+        <div class="api-step">The operator's office already has an account — per transcript</div>
+        <div class="api-step">Used for: lead contact enrichment, business lookup in target area</div>
+        <div class="api-step">re2.ai → API or export integration for lead lists</div>
+        <div class="api-step">Phase 2 addition — WF3 works without it (RE Daily News + Claude covers most)</div>
+      </div>
+      <div class="api-cost"><span>Cost:</span> Already have account · <span>Timeline:</span> Check account for API access</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ INFRA ═══════ -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-tag">Deployment Stack</div>
+    <h2>INFRA <em>DECISIONS</em></h2>
+    <div class="stline"></div>
+  </div>
+  <div class="infra-grid">
+
+    <div class="infra-card">
+      <div class="infra-card-header">
+        <h4>Frontend — Vercel ✓</h4>
+        <p>Your call. Correct call.</p>
+      </div>
+      <div class="infra-card-body">
+        <div class="infra-item"><span>Platform</span><strong>Vercel</strong></div>
+        <div class="infra-item"><span>Framework</span><strong>HTML/JS (now) → React (Step 10)</strong></div>
+        <div class="infra-item"><span>Preview branches</span><strong>Auto on every push</strong></div>
+        <div class="infra-item"><span>Custom domain</span><strong>cre-ai.app or similar</strong></div>
+        <div class="infra-item"><span>SSL</span><strong>Automatic (Let's Encrypt)</strong></div>
+        <div class="infra-item"><span>Cost</span><div class="infra-cost">Free forever for frontend</div></div>
+      </div>
+    </div>
+
+    <div class="infra-card">
+      <div class="infra-card-header">
+        <h4>Backend — Railway ✓</h4>
+        <p>Your call. Correct call.</p>
+      </div>
+      <div class="infra-card-body">
+        <div class="infra-item"><span>Platform</span><strong>Railway</strong></div>
+        <div class="infra-item"><span>Services</span><strong>5 Node/Express apps</strong></div>
+        <div class="infra-item"><span>Database</span><strong>Railway Postgres plugin</strong></div>
+        <div class="infra-item"><span>Auto-deploy</span><strong>On push to main</strong></div>
+        <div class="infra-item"><span>Env vars</span><strong>Railway dashboard UI</strong></div>
+        <div class="infra-item"><span>Cost</span><div class="infra-cost">Free tier → $5/mo when you scale</div></div>
+      </div>
+    </div>
+
+    <div class="infra-card">
+      <div class="infra-card-header">
+        <h4>Source Control — GitHub</h4>
+        <p>Standard. Push now.</p>
+      </div>
+      <div class="infra-card-body">
+        <div class="infra-item"><span>Repo</span><strong>cre-ai-suite (monorepo)</strong></div>
+        <div class="infra-item"><span>Visibility</span><strong>Private</strong></div>
+        <div class="infra-item"><span>Branches</span><strong>main · develop · wf1 · wf2…</strong></div>
+        <div class="infra-item"><span>CI</span><strong>GitHub Actions (already written)</strong></div>
+        <div class="infra-item"><span>Vercel integration</span><strong>Auto-preview on PR</strong></div>
+        <div class="infra-item"><span>Cost</span><div class="infra-cost">Free for private repos</div></div>
+      </div>
+    </div>
+
+    <div class="infra-card">
+      <div class="infra-card-header">
+        <h4>Database — PostgreSQL</h4>
+        <p>Railway plugin — shared across all 5 workflows.</p>
+      </div>
+      <div class="infra-card-body">
+        <div class="infra-item"><span>Provider</span><strong>Railway Postgres</strong></div>
+        <div class="infra-item"><span>Schema</span><strong>shared/db/schema.sql ✓</strong></div>
+        <div class="infra-item"><span>Tables</span><strong>clients · properties · owners · leads · campaigns</strong></div>
+        <div class="infra-item"><span>Local dev</span><strong>Docker Postgres or local install</strong></div>
+        <div class="infra-item"><span>Backups</span><strong>Railway auto-backup</strong></div>
+        <div class="infra-item"><span>Cost</span><div class="infra-cost">Free 500MB → $5/mo for more</div></div>
+      </div>
+    </div>
+
+    <div class="infra-card">
+      <div class="infra-card-header">
+        <h4>Monitoring — Free Stack</h4>
+        <p>Step 7 of audit. Set it and forget it.</p>
+      </div>
+      <div class="infra-card-body">
+        <div class="infra-item"><span>Uptime</span><strong>UptimeRobot (free)</strong></div>
+        <div class="infra-item"><span>Errors</span><strong>Sentry (free tier)</strong></div>
+        <div class="infra-item"><span>Performance</span><strong>Lighthouse CI in GitHub Actions</strong></div>
+        <div class="infra-item"><span>Logs</span><strong>Railway built-in logs</strong></div>
+        <div class="infra-item"><span>Alerts</span><strong>Email + SMS via UptimeRobot</strong></div>
+        <div class="infra-item"><span>Cost</span><div class="infra-cost">$0 — all free tiers</div></div>
+      </div>
+    </div>
+
+    <div class="infra-card">
+      <div class="infra-card-header">
+        <h4>Mobile — PWA → Capacitor</h4>
+        <p>Step 9. After WF1+WF3 are live.</p>
+      </div>
+      <div class="infra-card-body">
+        <div class="infra-item"><span>Phase 1</span><strong>PWA (add to home screen)</strong></div>
+        <div class="infra-item"><span>Phase 2</span><strong>Capacitor wrapper</strong></div>
+        <div class="infra-item"><span>iOS</span><strong>App Store ($99/yr Apple Dev)</strong></div>
+        <div class="infra-item"><span>Android</span><strong>Google Play ($25 one-time)</strong></div>
+        <div class="infra-item"><span>When</span><strong>After The operator uses it daily</strong></div>
+        <div class="infra-item"><span>Cost</span><div class="infra-cost">$124 one-time · Step 9 timeline</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ SPRINT PLAN ═══════ -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-tag">Execution Timeline</div>
+    <h2>THE <em>SPRINT PLAN</em></h2>
+    <div class="stline"></div>
+  </div>
+  <div class="sprint-rows">
+
+    <div class="sprint-row active">
+      <div class="sr-cell"><div class="sr-label">Now</div><div class="sr-week">THIS WKND</div></div>
+      <div class="sr-cell"><div class="sr-title">GitHub push + Deploy + Build all 5 frontends</div><div class="sr-items">Push repo to GitHub · Deploy all 5 backends to Railway · Deploy frontends to Vercel · Seed DB with dummy data · Build all frontend components (every form, button, state) · Gmail OAuth setup · Google Maps key · Twilio trial</div></div>
+      <div class="sr-cell"><div class="sr-deliverable">✓ 5 live URLs on Railway + Vercel<br>✓ Full frontend for every workflow<br>✓ DB seeded with real-looking data<br>✓ WF2 Report Builder fully functional</div><div class="sr-audit">Audit Step 1 → 2 transition</div></div>
+      <div class="sr-cell"><span class="status-pill sp-now">Building Now</span></div>
+    </div>
+
+    <div class="sprint-row">
+      <div class="sr-cell"><div class="sr-label">Week 1</div><div class="sr-week">MON–FRI</div></div>
+      <div class="sr-cell"><div class="sr-title">WF1 Search Engine — fully functional</div><div class="sr-items">CoStar + Crexi API keys obtained Monday · Wire all 3 API clients · Property diff engine live · Cron running 4am Phoenix time · Email alert firing with real properties · SMS sending to The operator's phone · The operator adds his first real client profile</div></div>
+      <div class="sr-cell"><div class="sr-deliverable">✓ The operator gets his first automated email<br>✓ Cron fires at 4am with real data<br>✓ SMS confirmation on new listings</div><div class="sr-audit">Audit Step 3 (Implementation) in progress</div></div>
+      <div class="sr-cell"><span class="status-pill sp-next">Week 1</span></div>
+    </div>
+
+    <div class="sprint-row">
+      <div class="sr-cell"><div class="sr-label">Week 2</div><div class="sr-week">WF3 LIVE</div></div>
+      <div class="sr-cell"><div class="sr-title">WF3 Outreach Engine — fully functional</div><div class="sr-items">RE Daily News crawler scraping weekly reports · Flyer upload processing real flyers from The operator's 50 listings · Lead scoring engine running · AI email drafts generated · Campaign send wired to Gmail · The operator launches first real outreach campaign</div></div>
+      <div class="sr-cell"><div class="sr-deliverable">✓ The operator uploads first real flyer<br>✓ AI finds real leads from lease data<br>✓ First campaign email sent to real leads</div><div class="sr-audit">Audit Step 3 complete → Step 4 QA begins</div></div>
+      <div class="sr-cell"><span class="status-pill sp-next">Week 2</span></div>
+    </div>
+
+    <div class="sprint-row">
+      <div class="sr-cell"><div class="sr-label">Week 3</div><div class="sr-week">QA + WF4</div></div>
+      <div class="sr-cell"><div class="sr-title">Internal QA (Step 4) + WF4 Owner Finder live</div><div class="sr-items">Run The Step 4 checklist against WF1 + WF3 · Every domain: FE, BE, DB, SEC, UX, OPS · Fix everything flagged · WF4 Pima Maps + AZ Corp scrapers fully functional · First real owner trace run by operator</div></div>
+      <div class="sr-cell"><div class="sr-deliverable">✓ Step 4 QA sign-off on WF1 + WF3<br>✓ The operator traces his first real owner<br>✓ Contact card generated from real address</div><div class="sr-audit">Audit Step 4 → Step 5 transition</div></div>
+      <div class="sr-cell"><span class="status-pill sp-later">Week 3</span></div>
+    </div>
+
+    <div class="sprint-row">
+      <div class="sr-cell"><div class="sr-label">Week 4</div><div class="sr-week">STAGING</div></div>
+      <div class="sr-cell"><div class="sr-title">Step 5 Staging + Custom Domain + WF5</div><div class="sr-items">The operator uses the app as real staging tester · Every friction point logged · Custom domain purchased and pointed · WF5 Off-Market Hunter — parcel CSV imported, matching engine live · First off-market property hunt run</div></div>
+      <div class="sr-cell"><div class="sr-deliverable">✓ cre-ai.app live with SSL<br>✓ The operator testing all 5 workflows daily<br>✓ Step 5 staging signed off</div><div class="sr-audit">Audit Steps 5 + 6 complete</div></div>
+      <div class="sr-cell"><span class="status-pill sp-later">Week 4</span></div>
+    </div>
+
+    <div class="sprint-row">
+      <div class="sr-cell"><div class="sr-label">Month 2</div><div class="sr-week">SCALE</div></div>
+      <div class="sr-cell"><div class="sr-title">Monitor · Refine · First other broker</div><div class="sr-items">UptimeRobot + Sentry live · Lighthouse baselines locked · Operator onboards as User #1 officially · Identify first other broker to license the suite · Begin scoping Phase 2 features based on real usage</div></div>
+      <div class="sr-cell"><div class="sr-deliverable">✓ Monitoring stack live (Step 7)<br>✓ First client onboarded (Step 8)<br>✓ Revenue conversation begins</div><div class="sr-audit">Audit Steps 7 + 8</div></div>
+      <div class="sr-cell"><span class="status-pill sp-later">Month 2</span></div>
+    </div>
+
+    <div class="sprint-row">
+      <div class="sr-cell"><div class="sr-label">Month 3+</div><div class="sr-week">APP STORE</div></div>
+      <div class="sr-cell"><div class="sr-title">PWA → Capacitor → App Store (Step 9)</div><div class="sr-items">PWA manifest + service worker · Capacitor wrapper · iOS build + App Store submission · Android build + Google Play submission · React migration planning begins only if PMF confirmed</div></div>
+      <div class="sr-cell"><div class="sr-deliverable">✓ iOS app in App Store<br>✓ Android app in Play Store<br>✓ React migration: only if 3+ PMF signals</div><div class="sr-audit">Audit Steps 9 → 10 (only after PMF)</div></div>
+      <div class="sr-cell"><span class="status-pill sp-later">Month 3+</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ TECH DECISION ═══════ -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-tag">Stack Rationale</div>
+    <h2>WHY THIS <em>STACK</em></h2>
+    <div class="stline"></div>
+  </div>
+  <div class="tech-decision">
+    <div class="td-header">
+      <h3>Node/Express + PostgreSQL + Vercel + Railway — aligned with The Step 1 constraints</h3>
+      <p>No Databutton. No Firebase. No Riff. No mock data. Clean separation. Real persistence. Everything real from day one.</p>
+    </div>
+    <div class="td-grid">
+      <div class="td-col">
+        <div class="td-layer">Frontend Layer</div>
+        <div class="td-item">
+          <div class="td-name">HTML/JS → React (Step 10)</div>
+          <div class="td-reason">Start with what we have — fully functional HTML shells. Fast to iterate. No build tooling overhead. When PMF is confirmed and the product needs a team, React migration happens exactly as your Step 10 describes.</div>
+          <div class="td-why">✓ Follows your Step 10 rule: React only after PMF</div>
+        </div>
+        <div class="td-item">
+          <div class="td-name">Vercel for deployment</div>
+          <div class="td-reason">Your choice, right choice. Instant preview branches, zero config SSL, global CDN. Pairs perfectly with Railway backend via environment variables.</div>
+          <div class="td-why">✓ Free forever for static/SSR frontend</div>
+        </div>
+      </div>
+      <div class="td-col">
+        <div class="td-layer">Backend Layer</div>
+        <div class="td-item">
+          <div class="td-name">Node.js + Express + TypeScript</div>
+          <div class="td-reason">Every workflow is an independent Express server. TypeScript gives us type safety across all 5 codebases using shared types in /shared/types. Runs on Railway with zero friction. Familiar for any JS developer who joins.</div>
+          <div class="td-why">✓ No vendor lock-in · Railway deploys Node natively</div>
+        </div>
+        <div class="td-item">
+          <div class="td-name">Railway for deployment</div>
+          <div class="td-reason">Your choice, right choice. Free Postgres plugin included. Auto-deploy on GitHub push. Environment variables managed in dashboard. 5 services = 5 Railway apps, all pointing at same Postgres instance.</div>
+          <div class="td-why">✓ Free tier → $5/mo · Postgres included</div>
+        </div>
+      </div>
+      <div class="td-col">
+        <div class="td-layer">Data + AI Layer</div>
+        <div class="td-item">
+          <div class="td-name">PostgreSQL (shared schema)</div>
+          <div class="td-reason">Single DB, shared by all 5 workflows. Schema already written. Real persistence from day one — no SQLite, no mock data, no JSON files. All 5 workflows can read each other's data (e.g., WF5 reads WF4 trace results).</div>
+          <div class="td-why">✓ Real data · Shared schema · Clean architecture</div>
+        </div>
+        <div class="td-item">
+          <div class="td-name">Claude AI (Anthropic)</div>
+          <div class="td-reason">Already have the key. Powers: WF2 property summaries, WF3 flyer reading + email drafting, WF4 owner enrichment + web search, WF5 pitch drafting. ~$20-50/mo at The operator's scale. The AI layer that makes this suite worth 10× what any manual process costs.</div>
+          <div class="td-why">✓ Key already exists · Powers 4 of 5 workflows</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ CTA ═══════ -->
+<div class="cta-block">
+  <div>
+    <h3>READY. LET'S BUILD.</h3>
+    <p>The repo is built. The strategy is mapped. The audit pipeline is aligned. Everything that can be built right now has a clear path. Everything that needs an API key has a clear acquisition plan. Monday's meeting is backed by a full working system — not a pitch deck.</p>
+    <p style="margin-top:10px;color:var(--gold);font-family:'DM Mono',monospace;font-size:11px;">Next action: git init → git push → Railway deploy → Vercel deploy → Start WF1 backend implementation</p>
+  </div>
+  <div class="cta-actions">
+    <button class="cta-btn primary">Push to GitHub Now</button>
+    <button class="cta-btn secondary">Start WF1 Backend</button>
+    <button class="cta-btn secondary">Get Gmail OAuth</button>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

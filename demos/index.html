@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAM×AI Suite — Demo Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: #0f0f0f;
+    color: #f5f0e8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 96px);
+    letter-spacing: 4px;
+    color: #c9a84c;
+    line-height: 1;
+  }
+
+  .header p {
+    font-size: 14px;
+    color: #8a9aaa;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .divider {
+    width: 80px;
+    height: 2px;
+    background: #c9a84c;
+    margin: 20px auto;
+  }
+
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 700px;
+  }
+
+  .card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    padding: 30px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card:hover {
+    border-color: #c9a84c;
+    transform: translateX(4px);
+  }
+
+  .card-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: #2a2a2a;
+    line-height: 1;
+    min-width: 50px;
+  }
+
+  .card-info {
+    flex: 1;
+  }
+
+  .card-info h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #f5f0e8;
+    margin-bottom: 6px;
+  }
+
+  .card-info p {
+    font-size: 12px;
+    color: #8a9aaa;
+    letter-spacing: 1px;
+  }
+
+  .btn {
+    background: #c9a84c;
+    color: #0f0f0f;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+
+  .btn:hover {
+    background: #e8c96a;
+  }
+
+  .footer {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 12px;
+    color: #3a3a3a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>KAM×AI</h1>
+    <div class="divider"></div>
+    <p>Commercial Real Estate Automation Suite — Demo Previews</p>
+  </div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-num">01</div>
+      <div class="card-info">
+        <h2>AI-Powered CRE Workflows</h2>
+        <p>Search · Alert · Report · Outreach · Trace · Hunt</p>
+      </div>
+      <a class="btn" href="01_cre_workflows_demo.html" target="_blank">View Demo</a>
+    </div>
+
+    <div class="card">
+      <div class="card-num">02</div>
+      <div class="card-info">
+        <h2>Kam's AI Suite — All 5 MVPs</h2>
+        <p>Full suite overview · Features · Build phases</p>
+      </div>
+      <a class="btn" href="02_cre_mvp_suite_demo.html" target="_blank">View Demo</a>
+    </div>
+
+    <div class="card">
+      <div class="card-num">03</div>
+      <div class="card-info">
+        <h2>CRE×AI Master Build Strategy</h2>
+        <p>Architecture · Roadmap · Deployment plan</p>
+      </div>
+      <a class="btn" href="03_cre_master_strategy_demo.html" target="_blank">View Demo</a>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    Cameron Norwood · Tucson, AZ · Built by Lamar (AI&I)
+  </div>
+
+</body>
+</html>

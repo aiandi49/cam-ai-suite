@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered CRE Workflows</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --rust: #c4501a;
+    --slate: #2a3240;
+    --mist: #8a9aaa;
+    --white: #ffffff;
+    --border: 1px solid rgba(10,10,10,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: #1a1a1a;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 60px;
+  }
+
+  /* ─── PAGE WRAPPER ─── */
+  .page {
+    width: 1100px;
+    max-width: 100%;
+    position: relative;
+  }
+
+  /* ─── SIDE A ─── */
+  .side-a {
+    background: var(--paper);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+  }
+
+  .header-strip {
+    background: var(--ink);
+    padding: 48px 60px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    overflow: hidden;
+  }
+  .header-strip::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 400px; height: 100%;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 8px,
+      rgba(201,168,76,0.08) 8px,
+      rgba(201,168,76,0.08) 9px
+    );
+  }
+
+  .header-left h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 88px;
+    line-height: 0.9;
+    color: var(--paper);
+    letter-spacing: 2px;
+  }
+  .header-left h1 span {
+    color: var(--gold);
+  }
+  .header-left .sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--mist);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 16px;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+  .header-right .badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    padding: 6px 14px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .header-right p {
+    font-size: 10px;
+    color: var(--mist);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  /* ─── WORKFLOW GRID ─── */
+  .workflows-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 0;
+    border-top: var(--border);
+  }
+
+  .workflow-card {
+    padding: 36px 40px;
+    border-right: var(--border);
+    border-bottom: var(--border);
+    position: relative;
+    transition: background 0.3s ease;
+    cursor: default;
+  }
+  .workflow-card:hover {
+    background: var(--cream);
+  }
+  .workflow-card:last-child,
+  .workflow-card:nth-child(3),
+  .workflow-card:nth-child(5) {
+    border-right: none;
+  }
+  .workflow-card.wide {
+    grid-column: span 2;
+  }
+  .workflow-card.full {
+    grid-column: span 3;
+    border-bottom: none;
+  }
+  .workflow-card:nth-child(4),
+  .workflow-card:nth-child(5) {
+    border-bottom: none;
+  }
+
+  .wf-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: rgba(10,10,10,0.06);
+    line-height: 1;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    pointer-events: none;
+    transition: color 0.3s ease;
+  }
+  .workflow-card:hover .wf-number {
+    color: rgba(201,168,76,0.15);
+  }
+
+  .wf-tag {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wf-tag::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .wf-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  .wf-desc {
+    font-size: 11.5px;
+    line-height: 1.85;
+    color: #444;
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+    max-width: 420px;
+  }
+
+  .wf-steps {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wf-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 10.5px;
+    color: #555;
+    font-family: 'DM Mono', monospace;
+    line-height: 1.6;
+  }
+  .step-dot {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .wf-sources {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .source-pill {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid rgba(10,10,10,0.2);
+    color: #666;
+    font-family: 'DM Mono', monospace;
+    border-radius: 2px;
+  }
+  .source-pill.active {
+    background: var(--ink);
+    color: var(--gold);
+    border-color: var(--ink);
+  }
+
+  /* ─── DIVIDER ─── */
+  .page-divider {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 0 20px;
+  }
+  .page-divider .label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #666;
+    white-space: nowrap;
+  }
+  .page-divider .line {
+    flex: 1;
+    height: 1px;
+    background: #444;
+  }
+  .flip-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #555;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+  /* ─── SIDE B ─── */
+  .side-b {
+    background: var(--slate);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    color: var(--paper);
+  }
+
+  .side-b-header {
+    padding: 40px 60px 36px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .side-b-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--paper);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .side-b-header h2 em {
+    color: var(--gold);
+    font-style: normal;
+  }
+  .side-b-header .intro {
+    max-width: 380px;
+    font-size: 11px;
+    line-height: 1.9;
+    color: var(--mist);
+    font-weight: 300;
+  }
+
+  /* ─── DETAIL ROWS ─── */
+  .detail-rows {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-row {
+    display: grid;
+    grid-template-columns: 64px 1fr 1fr;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.3s;
+  }
+  .detail-row:hover {
+    background: rgba(255,255,255,0.03);
+  }
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .dr-num {
+    padding: 32px 0 32px 40px;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 36px;
+  }
+  .dr-num span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--gold);
+    opacity: 0.7;
+    line-height: 1;
+  }
+
+  .dr-main {
+    padding: 32px 40px 32px 20px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .dr-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--paper);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .dr-desc {
+    font-size: 10.5px;
+    color: #7a8a99;
+    line-height: 1.9;
+    font-weight: 300;
+    max-width: 340px;
+  }
+
+  .dr-tech {
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+  }
+  .tech-label {
+    font-size: 8.5px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tech-chip {
+    font-size: 9px;
+    padding: 3px 9px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #aab;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+    font-family: 'DM Mono', monospace;
+  }
+  .tech-chip.highlight {
+    background: rgba(201,168,76,0.12);
+    border-color: rgba(201,168,76,0.3);
+    color: var(--gold-light);
+  }
+
+  .output-line {
+    font-size: 9.5px;
+    color: #5a7a5a;
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .output-line::before {
+    content: '▶';
+    font-size: 7px;
+    color: #4a8a4a;
+  }
+
+  /* ─── FOOTER ─── */
+  .side-b-footer {
+    padding: 28px 60px;
+    background: rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--gold);
+  }
+  .footer-brand span {
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-top: 2px;
+    font-weight: 300;
+  }
+  .footer-cta {
+    text-align: right;
+  }
+  .footer-cta p {
+    font-size: 10px;
+    color: #5a6a7a;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .footer-cta .phase {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--paper);
+  }
+  .phase-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+  .phase-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .phase-dot.active {
+    background: var(--gold);
+  }
+
+  /* ─── HOVER INTERACTIVITY ─── */
+  .workflow-card { transition: background 0.25s, transform 0.25s; }
+  .workflow-card:hover { transform: translateY(-2px); }
+  .detail-row { transition: background 0.25s; }
+
+  /* ─── PRINT HINT ─── */
+  .print-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #444;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-top: -20px;
+  }
+
+  @media (max-width: 900px) {
+    .workflows-grid { grid-template-columns: 1fr 1fr; }
+    .workflow-card.wide { grid-column: span 2; }
+    .workflow-card.full { grid-column: span 2; }
+    .header-left h1 { font-size: 60px; }
+    .detail-row { grid-template-columns: 50px 1fr; }
+    .dr-tech { display: none; }
+  }
+  @media (max-width: 600px) {
+    body { padding: 16px 10px; gap: 32px; }
+    .header-strip { padding: 28px 20px 24px; flex-direction: column; align-items: flex-start; gap: 16px; }
+    .header-left h1 { font-size: 48px; }
+    .header-right { text-align: left; }
+    .workflows-grid { grid-template-columns: 1fr; }
+    .workflow-card, .workflow-card.wide, .workflow-card.full { grid-column: span 1; }
+    .workflow-card { padding: 24px 20px; }
+    .wf-title { font-size: 20px; }
+    .detail-row { grid-template-columns: 40px 1fr; }
+    .dr-tech { display: none; }
+    .side-b .header-strip { padding: 28px 20px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ SIDE A -->
+<div class="page">
+  <div class="side-a">
+
+    <div class="header-strip">
+      <div class="header-left">
+        <h1>5 WORK<span>FLOWS</span></h1>
+        <div class="sub">Commercial Real Estate · Arizona</div>
+      </div>
+      <div class="header-right">
+        <div class="badge">AI-Powered Suite</div>
+        <p>CoStar · Crexi · LoopNet<br>MLS · Pima Maps · AZ Corp</p>
+      </div>
+    </div>
+
+    <div class="workflows-grid">
+
+      <!-- WF 1 -->
+      <div class="workflow-card">
+        <div class="wf-number">01</div>
+        <div class="wf-tag">Search Automation</div>
+        <div class="wf-title">Automated Property Search & Client Alert Engine</div>
+        <div class="wf-desc">Every client gets a profile: name, email, phone, search params, frequency. Each morning the engine queries CoStar, Crexi & LoopNet, compares against baseline, and fires personalized emails and texts — only when something new hits.</div>
+        <div class="wf-steps">
+          <div class="wf-step"><span class="step-dot">1</span>Enter client name + search params (sq ft, budget, type, map zone)</div>
+          <div class="wf-step"><span class="step-dot">2</span>Engine runs daily against all 3 platforms</div>
+          <div class="wf-step"><span class="step-dot">3</span>Diff against yesterday's results — new listings only</div>
+          <div class="wf-step"><span class="step-dot">4</span>Branded email + SMS: "2 new spaces. Here's the link. Book a call."</div>
+        </div>
+        <div class="wf-sources">
+          <span class="source-pill active">CoStar API</span>
+          <span class="source-pill active">Crexi API</span>
+          <span class="source-pill active">LoopNet API</span>
+          <span class="source-pill">Gmail / G Suite</span>
+          <span class="source-pill">SMS</span>
+        </div>
+      </div>
+
+      <!-- WF 2 -->
+      <div class="workflow-card">
+        <div class="wf-number">02</div>
+        <div class="wf-tag">Report Generation</div>
+        <div class="wf-title">Smart Branded Property Report Builder</div>
+        <div class="wf-desc">Replace the manual CoStar PDF grind. Feed search results into a branded report engine: photos, square footage breakdowns, asking rate, build year, traffic count, map link, cross-streets — formatted to stand out, not blend in.</div>
+        <div class="wf-steps">
+          <div class="wf-step"><span class="step-dot">1</span>Search runs → results returned via API</div>
+          <div class="wf-step"><span class="step-dot">2</span>Template auto-fills: client name, search criteria, property data</div>
+          <div class="wf-step"><span class="step-dot">3</span>Photos pulled, Google Maps link generated per property</div>
+          <div class="wf-step"><span class="step-dot">4</span>One-click: download PDF or send directly to client</div>
+        </div>
+        <div class="wf-sources">
+          <span class="source-pill active">CoStar API</span>
+          <span class="source-pill active">Crexi API</span>
+          <span class="source-pill">Google Maps</span>
+          <span class="source-pill">PDF Engine</span>
+        </div>
+      </div>
+
+      <!-- WF 3 -->
+      <div class="workflow-card">
+        <div class="wf-number">03</div>
+        <div class="wf-tag">Tenant & Buyer Outreach</div>
+        <div class="wf-title">Flyer Upload → Lead Discovery → Outreach Campaign</div>
+        <div class="wf-desc">Upload any listing flyer. AI reads the property type, size, and location. It then scours public lease data, RE Daily News, and web sources to build a targeted lead list — then fires personalized emails to everyone who might be interested.</div>
+        <div class="wf-steps">
+          <div class="wf-step"><span class="step-dot">1</span>Upload flyer → AI extracts property profile</div>
+          <div class="wf-step"><span class="step-dot">2</span>Crawl lease databases for recent tenants in matching sq ft range</div>
+          <div class="wf-step"><span class="step-dot">3</span>Build lead list: name, email, company, last lease details</div>
+          <div class="wf-step"><span class="step-dot">4</span>Send personalized campaign — "I saw you leased on X…"</div>
+        </div>
+        <div class="wf-sources">
+          <span class="source-pill active">RE Daily News</span>
+          <span class="source-pill active">RE² AI</span>
+          <span class="source-pill">Web Scrape</span>
+          <span class="source-pill">Gmail</span>
+          <span class="source-pill">AI Drafting</span>
+        </div>
+      </div>
+
+      <!-- WF 4 -->
+      <div class="workflow-card wide">
+        <div class="wf-number">04</div>
+        <div class="wf-tag">Owner Intelligence</div>
+        <div class="wf-title">Property Owner Finder & Skip Trace Engine</div>
+        <div class="wf-desc">CoStar hits a dead end — no owner info. This workflow chains together Pima County Maps (GIS parcel data), Arizona Corporation Commission, LinkedIn, and public records to drill down to the actual human behind any LLC, find their contact info, and build a relationship-ready dossier so you can make a move before anyone else.</div>
+        <div class="wf-steps">
+          <div class="wf-step"><span class="step-dot">1</span>Address from CoStar → Pima Maps → parcel number + LLC name</div>
+          <div class="wf-step"><span class="step-dot">2</span>AZ Corp Commission search → statutory agent, principals, mailing address</div>
+          <div class="wf-step"><span class="step-dot">3</span>LinkedIn / Facebook / web lookup for each principal</div>
+          <div class="wf-step"><span class="step-dot">4</span>Output: contact card with email, phone, social profiles, property history</div>
+        </div>
+        <div class="wf-sources">
+          <span class="source-pill active">Pima Maps GIS</span>
+          <span class="source-pill active">AZ Corp Commission</span>
+          <span class="source-pill active">LinkedIn</span>
+          <span class="source-pill">ATTOM Data</span>
+          <span class="source-pill">Web Scrape</span>
+          <span class="source-pill">CoStar</span>
+        </div>
+      </div>
+
+      <!-- WF 5 -->
+      <div class="workflow-card">
+        <div class="wf-number">05</div>
+        <div class="wf-tag">Off-Market Prospecting</div>
+        <div class="wf-title">Unlisted Property Hunter & Cold Outreach</div>
+        <div class="wf-desc">Got a buyer with specific needs — 2,000 sq ft on an acre — but nothing's listed? The engine finds every matching property in the metro (listed or not), traces the owner, and sends a targeted pitch: "I have a buyer who'd love your building."</div>
+        <div class="wf-steps">
+          <div class="wf-step"><span class="step-dot">1</span>Input buyer needs → system searches all parcels + records</div>
+          <div class="wf-step"><span class="step-dot">2</span>Match unlisted properties by size, zoning, type</div>
+          <div class="wf-step"><span class="step-dot">3</span>Run WF 04 skip trace on each match</div>
+          <div class="wf-step"><span class="step-dot">4</span>Blast personalized cold outreach — "I have a buyer…"</div>
+        </div>
+        <div class="wf-sources">
+          <span class="source-pill active">Tax Parcel DB</span>
+          <span class="source-pill active">Pima Maps</span>
+          <span class="source-pill">CoStar</span>
+          <span class="source-pill">Gmail</span>
+        </div>
+      </div>
+
+    </div><!-- /workflows-grid -->
+  </div><!-- /side-a -->
+</div>
+
+<!-- ═══════════════════════════════════════ FLIP DIVIDER -->
+<div class="page-divider">
+  <div class="line"></div>
+  <div class="label">· SIDE B ·</div>
+  <div class="line"></div>
+  <div class="flip-hint">↓ scroll for detail view</div>
+  <div class="line"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ SIDE B -->
+<div class="page">
+  <div class="side-b">
+
+    <div class="side-b-header">
+      <div>
+        <h2>THE <em>TECH</em><br>BEHIND IT</h2>
+      </div>
+      <div class="intro">
+        Each workflow maps to a set of data sources, APIs, and AI tools. This is the technical breakdown — what's needed to build, what it connects to, and what it outputs. Phase 1 targets Workflows 01 & 03 first.
+      </div>
+    </div>
+
+    <div class="detail-rows">
+
+      <!-- Row 1 -->
+      <div class="detail-row">
+        <div class="dr-num"><span>01</span></div>
+        <div class="dr-main">
+          <div class="dr-name">Search & Alert Engine</div>
+          <div class="dr-desc">Scheduled job (4am daily) pulls listings from CoStar, Crexi, LoopNet APIs. Diffs against stored baseline per client profile. Fires branded email via G Suite and optional SMS. CRM auto-updates with last-sent timestamp and property IDs.</div>
+          <div class="output-line">Outputs: Daily email digest · SMS alert · CRM log entry · Property diff report</div>
+        </div>
+        <div class="dr-tech">
+          <div class="tech-label">Stack</div>
+          <div class="tech-stack">
+            <span class="tech-chip highlight">CoStar API</span>
+            <span class="tech-chip highlight">Crexi API</span>
+            <span class="tech-chip highlight">LoopNet API</span>
+            <span class="tech-chip">Node / Python</span>
+            <span class="tech-chip">G Suite SMTP</span>
+            <span class="tech-chip">Twilio SMS</span>
+            <span class="tech-chip">SQLite / Postgres</span>
+            <span class="tech-chip">Cron Scheduler</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="detail-row">
+        <div class="dr-num"><span>02</span></div>
+        <div class="dr-main">
+          <div class="dr-name">Branded Report Builder</div>
+          <div class="dr-desc">Takes API results and populates a custom HTML/PDF template. Pulls property photos, generates Google Maps embed links per address, adds cross-street and traffic count data, explains sq ft breakdowns in plain English. Outputs a PDF that looks nothing like CoStar's boilerplate.</div>
+          <div class="output-line">Outputs: Branded PDF report · Google Maps links · Plain-English property summaries</div>
+        </div>
+        <div class="dr-tech">
+          <div class="tech-label">Stack</div>
+          <div class="tech-stack">
+            <span class="tech-chip highlight">CoStar/Crexi APIs</span>
+            <span class="tech-chip highlight">Google Maps API</span>
+            <span class="tech-chip">Puppeteer / WeasyPrint</span>
+            <span class="tech-chip">HTML Template Engine</span>
+            <span class="tech-chip">Claude AI (summaries)</span>
+            <span class="tech-chip">Dropbox / Drive</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="detail-row">
+        <div class="dr-num"><span>03</span></div>
+        <div class="dr-main">
+          <div class="dr-name">Flyer → Lead → Campaign</div>
+          <div class="dr-desc">PDF/image flyer uploaded → Claude extracts property type, size, location, target tenant profile. Crawler hits RE Daily News, Crexi public lease records, and web sources. Builds CSV lead list. Claude drafts personalized emails per lead. G Suite sends the campaign. Responses categorized: interested / not interested / follow up.</div>
+          <div class="output-line">Outputs: Lead list CSV · Personalized email drafts · Campaign dashboard · Response tracker</div>
+        </div>
+        <div class="dr-tech">
+          <div class="tech-label">Stack</div>
+          <div class="tech-stack">
+            <span class="tech-chip highlight">Claude AI (vision + drafting)</span>
+            <span class="tech-chip highlight">RE Daily News scraper</span>
+            <span class="tech-chip highlight">RE² AI</span>
+            <span class="tech-chip">Playwright crawler</span>
+            <span class="tech-chip">G Suite API</span>
+            <span class="tech-chip">Campaign tracker DB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4 -->
+      <div class="detail-row">
+        <div class="dr-num"><span>04</span></div>
+        <div class="dr-main">
+          <div class="dr-name">Owner Skip Trace Engine</div>
+          <div class="dr-desc">Address → Pima County GIS API → parcel number, legal entity name. AZ Corp Commission search → principals, statutory agent, mailing address. LinkedIn / web lookup on each principal. ATTOM data cross-reference. Final output: contact card ready for outreach or CRM import.</div>
+          <div class="output-line">Outputs: Owner contact card · LLC chain map · LinkedIn profile · CRM-ready JSON</div>
+        </div>
+        <div class="dr-tech">
+          <div class="tech-label">Stack</div>
+          <div class="tech-stack">
+            <span class="tech-chip highlight">Pima County GIS</span>
+            <span class="tech-chip highlight">AZ Corp Commission</span>
+            <span class="tech-chip">ATTOM Data API</span>
+            <span class="tech-chip">LinkedIn scraper</span>
+            <span class="tech-chip">Claude AI (entity matching)</span>
+            <span class="tech-chip">Graph DB (relationships)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 5 -->
+      <div class="detail-row">
+        <div class="dr-num"><span>05</span></div>
+        <div class="dr-main">
+          <div class="dr-name">Off-Market Property Hunter</div>
+          <div class="dr-desc">Buyer profile entered (sq ft, type, budget, area). System queries tax parcel database, Pima Maps, and county records for matching properties — regardless of listing status. For each match, runs WF 04 skip trace. Outputs a hit list of potential sellers + auto-drafted cold outreach emails per owner.</div>
+          <div class="output-line">Outputs: Off-market property list · Owner contacts · Cold email drafts · Deal potential score</div>
+        </div>
+        <div class="dr-tech">
+          <div class="tech-label">Stack</div>
+          <div class="tech-stack">
+            <span class="tech-chip highlight">Tax Parcel DB</span>
+            <span class="tech-chip highlight">Pima Maps GIS</span>
+            <span class="tech-chip">WF 04 (skip trace)</span>
+            <span class="tech-chip">Claude AI (scoring + drafting)</span>
+            <span class="tech-chip">G Suite API</span>
+            <span class="tech-chip">Zoning data</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /detail-rows -->
+
+    <div class="side-b-footer">
+      <div class="footer-brand">
+        CRE × AI
+        <span>Commercial Real Estate Automation Suite</span>
+      </div>
+      <div class="footer-cta">
+        <p>Current Build Phase</p>
+        <div class="phase">PHASE 1 — WORKFLOWS 01 & 03</div>
+        <div class="phase-dots">
+          <div class="phase-dot active"></div>
+          <div class="phase-dot active"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+          <div class="phase-dot"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /side-b -->
+</div>
+
+<div class="print-hint">// print this page · ctrl+p · save as pdf · use as brief</div>
+
+</body>
+</html>

@@ -1,0 +1,2130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kam's AI Suite — All 5 MVPs</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Playfair+Display:ital,wght@0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0d0f14;
+  --surface: #141820;
+  --surface2: #1c2230;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --rust: #d4562a;
+  --green: #3ab87a;
+  --blue: #3a7fd4;
+  --text: #e8e4dc;
+  --muted: #6a7a8a;
+  --border: rgba(255,255,255,0.07);
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── TOP NAV ── */
+.suite-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,15,20,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.suite-nav .brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  padding: 16px 24px 16px 0;
+  border-right: 1px solid var(--border);
+  margin-right: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nav-btn {
+  padding: 18px 20px;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  font-family: 'DM Mono', monospace;
+  flex-shrink: 0;
+}
+.nav-btn:hover { color: var(--text); }
+.nav-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── SECTION WRAPPER ── */
+.wf-section {
+  display: none;
+  padding: 48px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.wf-section.active { display: block; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+  gap: 24px;
+}
+.sh-left {}
+.wf-badge {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wf-badge::before { content:''; display:block; width:20px; height:1px; background:var(--gold); }
+.section-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  line-height: 0.95;
+  letter-spacing: 1px;
+}
+.section-header h2 em { color: var(--gold); font-style: normal; }
+.sh-desc {
+  max-width: 380px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+  font-weight: 300;
+  margin-top: 12px;
+}
+
+/* ── DUAL PREVIEW FRAME ── */
+.dual-preview {
+  display: grid;
+  grid-template-columns: 1fr 375px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* ── DESKTOP FRAME ── */
+.desktop-frame {
+  background: #0a0a0f;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+}
+.desktop-chrome {
+  background: #1a1a24;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.chrome-dots { display:flex; gap:5px; }
+.chrome-dot { width:10px; height:10px; border-radius:50%; }
+.chrome-dot:nth-child(1){background:#e05252}
+.chrome-dot:nth-child(2){background:#e0b252}
+.chrome-dot:nth-child(3){background:#52e07a}
+.chrome-url {
+  flex:1;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 10px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  margin-left: 8px;
+}
+.desktop-content { height: 620px; overflow-y: auto; overflow-x: hidden; }
+.desktop-content::-webkit-scrollbar { width: 4px; }
+.desktop-content::-webkit-scrollbar-track { background: transparent; }
+.desktop-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── MOBILE FRAME ── */
+.mobile-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.mobile-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+.mobile-frame {
+  width: 375px;
+  background: #000;
+  border-radius: 44px;
+  padding: 12px;
+  border: 8px solid #2a2a3a;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative;
+}
+.mobile-frame::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 28px;
+  background: #0a0a0f;
+  border-radius: 14px;
+  z-index: 10;
+}
+.mobile-screen {
+  background: #0d0f14;
+  border-radius: 34px;
+  overflow: hidden;
+  height: 680px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 44px;
+}
+.mobile-screen::-webkit-scrollbar { display: none; }
+
+/* ════════════════════════════════════════════════════════
+   WORKFLOW 1 — SEARCH ENGINE
+════════════════════════════════════════════════════════ */
+
+/* Desktop WF1 */
+.wf1-desktop { display: flex; height: 620px; }
+
+.wf1-sidebar {
+  width: 260px;
+  background: #101420;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.wf1-sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.wf1-sidebar-header h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.wf1-sidebar-header p { font-size: 10px; color: var(--muted); }
+.wf1-client-list { flex: 1; overflow-y: auto; padding: 8px; }
+.wf1-client {
+  padding: 12px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+  transition: all 0.2s;
+}
+.wf1-client:hover, .wf1-client.active {
+  background: rgba(201,168,76,0.07);
+  border-color: rgba(201,168,76,0.2);
+}
+.wf1-client.active .wf1-cname { color: var(--gold); }
+.wf1-cname { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.wf1-ctag { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.wf1-cbadge {
+  display: inline-block;
+  font-size: 8px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(58,184,122,0.15);
+  color: var(--green);
+  margin-top: 4px;
+}
+.wf1-cbadge.new { background: rgba(201,168,76,0.15); color: var(--gold); }
+
+.wf1-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.wf1-topbar {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wf1-topbar h4 { font-size: 16px; font-weight: 600; }
+.wf1-topbar p { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.btn-gold {
+  padding: 8px 18px;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  transition: background 0.2s;
+}
+.btn-gold:hover { background: var(--gold2); }
+.btn-outline {
+  padding: 8px 18px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  transition: all 0.2s;
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+.wf1-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; border-bottom: 1px solid var(--border); }
+.wf1-stat {
+  padding: 16px 20px;
+  border-right: 1px solid var(--border);
+}
+.wf1-stat:last-child { border-right: none; }
+.wf1-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--gold); line-height: 1; }
+.wf1-stat-label { font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+.wf1-listings { flex: 1; overflow-y: auto; padding: 16px 24px; display: flex; flex-direction: column; gap: 10px; }
+.wf1-listing-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+.wf1-listing-card:hover { border-color: rgba(201,168,76,0.3); }
+.wf1-listing-card.new-listing { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.04); }
+.listing-img {
+  width: 80px; height: 60px;
+  background: linear-gradient(135deg, #1a2230 0%, #2a3240 100%);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.listing-info { flex: 1; }
+.listing-addr { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.listing-meta { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+.listing-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.ltag {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+.ltag.new { background: rgba(201,168,76,0.12); color: var(--gold); }
+.listing-price { font-size: 14px; font-weight: 700; color: var(--green); white-space: nowrap; }
+
+.wf1-bottombar {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.wf1-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+}
+.wf1-input::placeholder { color: var(--muted); }
+
+/* Mobile WF1 */
+.mob-header {
+  background: #101420;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mob-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--gold); }
+.mob-icon { font-size: 18px; }
+.mob-search { padding: 12px 16px; }
+.mob-search input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+}
+.mob-search input::placeholder { color: var(--muted); }
+.mob-section-label {
+  padding: 8px 16px 6px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+.mob-client-card {
+  margin: 4px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mob-client-card.alert { border-color: rgba(201,168,76,0.4); }
+.mcname { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.mcmeta { font-size: 10px; color: var(--muted); }
+.mcbadge {
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(201,168,76,0.15);
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+}
+.mob-prop-card {
+  margin: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mob-prop-img {
+  height: 100px;
+  background: linear-gradient(135deg, #1a2a1a 0%, #2a3a2a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  position: relative;
+}
+.mob-prop-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--gold);
+  color: #000;
+  font-size: 8px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+}
+.mob-prop-info { padding: 10px 12px; }
+.mob-prop-addr { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.mob-prop-meta { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.mob-prop-price { color: var(--green); font-weight: 700; font-size: 13px; margin-top: 6px; }
+.mob-bottom-nav {
+  position: sticky;
+  bottom: 0;
+  background: rgba(13,15,20,0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 10px 0 20px;
+}
+.mob-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 8px;
+  color: var(--muted);
+  padding: 6px 0;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+.mob-nav-item.active { color: var(--gold); }
+.mob-nav-item .ni { font-size: 16px; }
+
+/* ════════════════════════════════════════════════════════
+   WORKFLOW 2 — REPORT BUILDER
+════════════════════════════════════════════════════════ */
+.wf2-desktop { display: flex; height: 620px; }
+.wf2-left {
+  width: 320px;
+  background: #0e1118;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wf2-panel-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: #101620;
+}
+.wf2-panel-header h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.wf2-panel-header p { font-size: 10px; color: var(--muted); }
+.wf2-form { padding: 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; flex: 1; }
+.form-group label {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+.form-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+}
+.form-input::placeholder { color: var(--muted); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.wf2-generate {
+  margin: 0 20px 20px;
+  padding: 12px;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wf2-right { flex: 1; overflow-y: auto; background: #f5f0e8; }
+.report-preview { padding: 32px; color: #1a1a1a; }
+.report-cover {
+  background: #1a1a2a;
+  color: #f5f0e8;
+  padding: 32px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.report-cover::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 200px; height: 100%;
+  background: repeating-linear-gradient(-45deg, transparent, transparent 6px, rgba(201,168,76,0.06) 6px, rgba(201,168,76,0.06) 7px);
+}
+.report-cover-brand { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 4px; color: var(--gold); margin-bottom: 20px; }
+.report-cover-title { font-family: 'Playfair Display', serif; font-size: 28px; line-height: 1.2; margin-bottom: 8px; }
+.report-cover-sub { font-size: 11px; color: #8a9aaa; font-family: 'DM Mono', monospace; }
+.report-cover-meta { margin-top: 20px; display: flex; gap: 24px; }
+.rcm { font-size: 10px; }
+.rcm-label { color: #5a6a7a; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; }
+.rcm-val { color: var(--gold); font-weight: 600; font-size: 13px; margin-top: 2px; }
+.report-prop {
+  background: white;
+  border: 1px solid #e0dbd0;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.report-prop-img {
+  height: 120px;
+  background: linear-gradient(135deg, #2a3a2a 0%, #3a4a3a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+.report-prop-body { padding: 16px; }
+.report-prop-addr { font-size: 15px; font-weight: 700; color: #1a1a2a; margin-bottom: 4px; }
+.report-prop-meta { font-size: 10px; color: #6a6a7a; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+.report-prop-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.rpg-item { background: #f5f0e8; padding: 8px; border-radius: 3px; }
+.rpg-label { font-size: 8px; color: #8a8a9a; letter-spacing: 1px; text-transform: uppercase; }
+.rpg-val { font-size: 13px; font-weight: 700; color: #1a1a2a; margin-top: 2px; }
+
+/* WF2 Mobile */
+.mob-tab-bar {
+  display: flex;
+  padding: 8px 12px;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+  background: #101420;
+}
+.mob-tab {
+  flex: 1;
+  padding: 6px;
+  text-align: center;
+  font-size: 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+}
+.mob-tab.active { background: rgba(201,168,76,0.15); color: var(--gold); }
+.mob-form { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.mob-form label { font-size: 9px; letter-spacing: 2px; color: var(--gold); font-family: 'DM Mono', monospace; display: block; margin-bottom: 4px; }
+.mob-form input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+}
+.mob-form input::placeholder { color: var(--muted); }
+.mob-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+  margin-top: 4px;
+}
+.mob-report-card {
+  margin: 8px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mob-report-top {
+  background: #1a1a2a;
+  padding: 14px;
+}
+.mob-report-top .rt { font-family: 'Playfair Display', serif; font-size: 14px; margin-bottom: 4px; }
+.mob-report-top .rs { font-size: 9px; color: #8a9aaa; font-family: 'DM Mono', monospace; }
+.mob-report-items { padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.mob-report-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+}
+.mri-img { width: 36px; height: 28px; background: #2a3a2a; border-radius: 3px; display:flex; align-items:center; justify-content:center; font-size:12px; }
+.mri-addr { font-size: 11px; font-weight: 600; }
+.mri-meta { font-size: 9px; color: var(--muted); }
+.mri-price { font-size: 11px; color: var(--green); font-weight: 700; margin-left: auto; white-space: nowrap; }
+
+/* ════════════════════════════════════════════════════════
+   WORKFLOW 3 — OUTREACH ENGINE
+════════════════════════════════════════════════════════ */
+.wf3-desktop { display: flex; flex-direction: column; height: 620px; }
+.wf3-topbar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  gap: 16px;
+  align-items: center;
+  background: #0e1018;
+}
+.wf3-topbar h4 { font-size: 15px; font-weight: 700; flex: 1; }
+.upload-zone {
+  border: 1.5px dashed rgba(201,168,76,0.4);
+  border-radius: 8px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(201,168,76,0.04);
+}
+.upload-zone:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+.upload-zone span { font-size: 11px; color: var(--gold); font-family: 'DM Mono', monospace; }
+.wf3-body { flex: 1; display: flex; overflow: hidden; }
+.wf3-flyer-panel {
+  width: 260px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wf3-flyer-img {
+  height: 200px;
+  background: linear-gradient(160deg, #1a2a1a 0%, #2a3a20 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.flyer-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: #000;
+  font-size: 9px;
+  padding: 4px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.wf3-extracted { padding: 16px; flex: 1; overflow-y: auto; }
+.wf3-extracted h5 { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+.ext-row { display: flex; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.ext-label { font-size: 10px; color: var(--muted); }
+.ext-val { font-size: 11px; font-weight: 600; text-align: right; }
+.wf3-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.wf3-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+}
+.wf3-tab {
+  padding: 12px 16px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.wf3-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.wf3-leads { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.lead-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+.lead-card:hover { border-color: rgba(201,168,76,0.3); }
+.lead-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a3a4a, #3a4a5a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.lead-info { flex: 1; }
+.lead-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.lead-company { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.lead-lease { font-size: 10px; color: var(--green); font-family: 'DM Mono', monospace; }
+.lead-actions { display: flex; gap: 6px; flex-direction: column; align-items: flex-end; }
+.lead-status {
+  font-size: 8px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.ls-warm { background: rgba(201,168,76,0.15); color: var(--gold); }
+.ls-new { background: rgba(58,184,122,0.15); color: var(--green); }
+.ls-cold { background: rgba(255,255,255,0.05); color: var(--muted); }
+.lead-btn {
+  font-size: 9px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text);
+  background: transparent;
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+
+/* WF3 Mobile */
+.mob-upload-zone {
+  margin: 12px;
+  border: 1.5px dashed rgba(201,168,76,0.4);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  background: rgba(201,168,76,0.03);
+}
+.mob-upload-zone .uz-icon { font-size: 36px; margin-bottom: 8px; }
+.mob-upload-zone .uz-text { font-size: 12px; color: var(--gold); font-family: 'DM Mono', monospace; }
+.mob-upload-zone .uz-sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.mob-upload-zone .uz-btn {
+  margin-top: 14px;
+  padding: 10px 20px;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+}
+.mob-flyer-preview {
+  margin: 0 12px 12px;
+  background: linear-gradient(160deg, #1a2a1a 0%, #2a3a20 100%);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+.mob-flyer-preview .fp-icon { font-size: 32px; margin-bottom: 8px; }
+.mob-flyer-preview .fp-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.mob-flyer-preview .fp-meta { font-size: 10px; color: #8aaa8a; font-family: 'DM Mono', monospace; }
+.mob-leads-count {
+  padding: 8px 16px;
+  font-size: 10px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  display: flex;
+  justify-content: space-between;
+}
+.mob-leads-count span { color: var(--green); }
+.mob-lead-row {
+  margin: 4px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.mob-lead-av {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a3a4a, #3a4a5a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.mob-lead-info { flex: 1; min-width: 0; }
+.mob-lead-name { font-size: 12px; font-weight: 600; }
+.mob-lead-meta { font-size: 9px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mob-lead-badge {
+  font-size: 8px;
+  padding: 3px 7px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ════════════════════════════════════════════════════════
+   WORKFLOW 4 — OWNER FINDER
+════════════════════════════════════════════════════════ */
+.wf4-desktop { height: 620px; display: flex; flex-direction: column; }
+.wf4-searchbar {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #0e1018;
+}
+.wf4-searchbar h4 { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--gold); white-space: nowrap; }
+.wf4-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+}
+.wf4-input::placeholder { color: var(--muted); }
+.wf4-body { flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; overflow: hidden; }
+.wf4-col {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wf4-col:last-child { border-right: none; }
+.wf4-col-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.wf4-col-header h5 {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 2px;
+}
+.wf4-col-header p { font-size: 9px; color: var(--muted); }
+.wf4-col-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.wf4-data-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.wf4-data-block h6 { font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.wf4-data-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.wf4-data-key { font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.wf4-data-val { font-size: 10px; font-weight: 600; text-align: right; max-width: 140px; word-break: break-word; }
+.wf4-data-val.gold { color: var(--gold); }
+.wf4-data-val.green { color: var(--green); }
+.pipeline-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--gold);
+  padding: 8px 0;
+  opacity: 0.5;
+}
+.wf4-person-card {
+  background: linear-gradient(135deg, #1a2230 0%, #1e2a3a 100%);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 8px;
+  padding: 14px;
+}
+.wf4-person-top { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.wf4-person-av {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a4a6a, #3a5a7a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.wf4-person-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.wf4-person-title { font-size: 10px; color: var(--muted); }
+.wf4-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 10px;
+}
+.wf4-contact-item:last-child { border-bottom: none; }
+.wf4-contact-icon { width: 20px; text-align: center; font-size: 12px; }
+.wf4-contact-val { color: var(--blue); text-decoration: none; cursor: pointer; }
+.conf-bar {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.conf-label { font-size: 8px; color: var(--muted); letter-spacing: 2px; margin-bottom: 5px; font-family: 'DM Mono', monospace; }
+.conf-track { background: rgba(255,255,255,0.06); border-radius: 4px; height: 4px; }
+.conf-fill { height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--gold), var(--green)); }
+
+/* WF4 Mobile */
+.mob-addr-search { padding: 12px; }
+.mob-addr-search input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 8px;
+}
+.mob-addr-search input::placeholder { color: var(--muted); }
+.mob-pipeline-step {
+  margin: 4px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.mps-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.mps-num.done { background: var(--gold); color: #000; border-color: var(--gold); }
+.mps-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.mps-sub { font-size: 10px; color: var(--muted); }
+.mps-result { font-size: 10px; color: var(--green); margin-top: 4px; font-family: 'DM Mono', monospace; }
+.mob-result-card {
+  margin: 8px 12px;
+  background: linear-gradient(135deg, #1a2230, #1e2a3a);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 12px;
+  padding: 16px;
+}
+.mob-result-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.mob-result-sub { font-size: 10px; color: var(--muted); margin-bottom: 12px; }
+.mob-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 11px;
+}
+.mob-contact-item:last-child { border-bottom: none; }
+.mob-contact-icon { font-size: 14px; }
+.mob-contact-val { color: var(--blue); }
+
+/* ════════════════════════════════════════════════════════
+   WORKFLOW 5 — OFF-MARKET HUNTER
+════════════════════════════════════════════════════════ */
+.wf5-desktop { height: 620px; display: flex; flex-direction: column; }
+.wf5-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: #0e1018;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.wf5-header h4 { font-size: 15px; font-weight: 700; }
+.wf5-params { display: flex; gap: 8px; align-items: center; flex: 1; }
+.param-chip {
+  padding: 6px 12px;
+  background: var(--surface2);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 20px;
+  font-size: 10px;
+  color: var(--gold);
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.param-chip:hover { background: rgba(201,168,76,0.1); }
+.wf5-body { flex: 1; display: flex; overflow: hidden; }
+.wf5-map {
+  flex: 1;
+  background: #0a1018;
+  position: relative;
+  overflow: hidden;
+}
+.map-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.015) 40px, rgba(255,255,255,0.015) 41px);
+}
+.map-label {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+  z-index: 5;
+}
+.map-marker {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid rgba(201,168,76,0.3);
+  cursor: pointer;
+  transition: transform 0.2s;
+  z-index: 4;
+}
+.map-marker::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.1);
+  animation: ripple 2s infinite;
+}
+@keyframes ripple { 0%{transform:scale(0.8);opacity:1} 100%{transform:scale(2.5);opacity:0} }
+.map-marker.hot { background: var(--rust); }
+.map-marker.warm { background: var(--gold); }
+.map-marker.cold { background: var(--blue); }
+
+.wf5-panel {
+  width: 340px;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wf5-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.wf5-panel-header h5 { font-size: 13px; font-weight: 700; }
+.result-count { font-size: 11px; color: var(--gold); font-family: 'DM Mono', monospace; }
+.wf5-results { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.wf5-result-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.wf5-result-card:hover, .wf5-result-card.selected { border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.04); }
+.wf5-result-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.wf5-result-addr { font-size: 12px; font-weight: 600; }
+.wf5-result-type { font-size: 9px; color: var(--muted); margin-top: 1px; }
+.wf5-match { font-size: 9px; padding: 2px 8px; border-radius: 10px; font-family: 'DM Mono', monospace; white-space: nowrap; }
+.wf5-match.high { background: rgba(58,184,122,0.15); color: var(--green); }
+.wf5-match.med { background: rgba(201,168,76,0.15); color: var(--gold); }
+.wf5-result-meta { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 6px; }
+.wf5-result-owner { font-size: 10px; color: var(--blue); }
+.wf5-btn-row { display: flex; gap: 6px; margin-top: 8px; }
+.wf5-btn {
+  flex: 1;
+  padding: 6px;
+  font-size: 9px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.5px;
+}
+.wf5-btn.primary { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+.wf5-btn.secondary { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+
+/* WF5 Mobile */
+.mob-buyer-profile {
+  margin: 12px;
+  background: var(--surface2);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 12px;
+  padding: 14px;
+}
+.mob-buyer-label { font-size: 9px; letter-spacing: 2px; color: var(--gold); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+.mob-buyer-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.mob-buyer-params { display: flex; flex-wrap: wrap; gap: 5px; }
+.mob-param { font-size: 9px; padding: 3px 8px; background: rgba(255,255,255,0.05); border-radius: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.mob-map-mini {
+  margin: 0 12px 10px;
+  height: 160px;
+  background: #0a1018;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.mob-map-mini .map-bg { opacity: 0.5; }
+.mob-map-mini .mob-map-label {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  z-index: 5;
+  font-family: 'DM Mono', monospace;
+}
+.mob-hit-card {
+  margin: 4px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.mob-hit-addr { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.mob-hit-meta { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.mob-hit-owner { font-size: 10px; color: var(--blue); margin-top: 4px; }
+.mob-hit-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.mob-score { font-size: 9px; padding: 2px 8px; border-radius: 8px; white-space: nowrap; font-family: 'DM Mono', monospace; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.wf-section.active .dual-preview { animation: fadeUp 0.4s ease; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .dual-preview { grid-template-columns: 1fr; }
+  .mobile-wrap { width: 100%; align-items: flex-start; flex-direction: row; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ GLOBAL NAV ═══════════════════════ -->
+<nav class="suite-nav">
+  <div class="brand">KAM×AI</div>
+  <div class="nav-btn active" onclick="showWF(1,this)">01 · Search Engine</div>
+  <div class="nav-btn" onclick="showWF(2,this)">02 · Report Builder</div>
+  <div class="nav-btn" onclick="showWF(3,this)">03 · Outreach Engine</div>
+  <div class="nav-btn" onclick="showWF(4,this)">04 · Owner Finder</div>
+  <div class="nav-btn" onclick="showWF(5,this)">05 · Off-Market Hunter</div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════
+     WF 1 — SEARCH & ALERT ENGINE
+═══════════════════════════════════════════════════ -->
+<div class="wf-section active" id="wf1">
+  <div class="section-header">
+    <div class="sh-left">
+      <div class="wf-badge">Workflow 01</div>
+      <h2>SEARCH &<br><em>ALERT</em> ENGINE</h2>
+      <p class="sh-desc">Client gets a profile. Engine runs daily. Email + text fires only when something new hits. 500 clients, zero manual effort.</p>
+    </div>
+  </div>
+  <div class="dual-preview">
+
+    <!-- DESKTOP -->
+    <div class="desktop-frame">
+      <div class="desktop-chrome">
+        <div class="chrome-dots"><div class="chrome-dot"></div><div class="chrome-dot"></div><div class="chrome-dot"></div></div>
+        <div class="chrome-url">cam-ai.app / search-engine</div>
+      </div>
+      <div class="desktop-content">
+        <div class="wf1-desktop">
+          <div class="wf1-sidebar">
+            <div class="wf1-sidebar-header">
+              <h3>CLIENTS</h3>
+              <p>127 active · 3 alerts today</p>
+            </div>
+            <div class="wf1-client-list">
+              <div class="wf1-client active">
+                <div class="wf1-cname">Elijah Daly</div>
+                <div class="wf1-ctag">Retail · 2,500–3,500 sf · $3,500/mo</div>
+                <div class="wf1-cbadge new">2 NEW TODAY</div>
+              </div>
+              <div class="wf1-client">
+                <div class="wf1-cname">Marcus Webb</div>
+                <div class="wf1-ctag">Office · 1,000–2,000 sf · $2,000/mo</div>
+                <div class="wf1-cbadge">No change</div>
+              </div>
+              <div class="wf1-client">
+                <div class="wf1-cname">Sandra Ortiz</div>
+                <div class="wf1-ctag">For Sale · Office/Retail · $500K</div>
+                <div class="wf1-cbadge new">1 NEW</div>
+              </div>
+              <div class="wf1-client">
+                <div class="wf1-cname">Dev Singh</div>
+                <div class="wf1-ctag">Industrial · 5,000 sf · NE Tucson</div>
+                <div class="wf1-cbadge">No change</div>
+              </div>
+              <div class="wf1-client">
+                <div class="wf1-cname">Hilda Reyes</div>
+                <div class="wf1-ctag">Retail · 1,500–2,500 sf · $2,800/mo</div>
+                <div class="wf1-cbadge">No change</div>
+              </div>
+              <div class="wf1-client">
+                <div class="wf1-cname">Tom Farley</div>
+                <div class="wf1-ctag">Mixed-Use · 3,000 sf · $4,000/mo</div>
+                <div class="wf1-cbadge new">3 NEW</div>
+              </div>
+            </div>
+          </div>
+          <div class="wf1-main">
+            <div class="wf1-topbar">
+              <div>
+                <h4>Elijah Daly — Daily Report</h4>
+                <p>Retail · 2,500–3,500 sf · Max $3,500/mo · Tucson</p>
+              </div>
+              <div style="display:flex;gap:8px">
+                <button class="btn-outline">Send Now</button>
+                <button class="btn-gold">+ Add Client</button>
+              </div>
+            </div>
+            <div class="wf1-stats">
+              <div class="wf1-stat"><div class="wf1-stat-num">15</div><div class="wf1-stat-label">Total Matches</div></div>
+              <div class="wf1-stat"><div class="wf1-stat-num">2</div><div class="wf1-stat-label">New Today</div></div>
+              <div class="wf1-stat"><div class="wf1-stat-num">12d</div><div class="wf1-stat-label">Since Start</div></div>
+              <div class="wf1-stat"><div class="wf1-stat-num">11</div><div class="wf1-stat-label">Emails Sent</div></div>
+            </div>
+            <div class="wf1-listings">
+              <div class="wf1-listing-card new-listing">
+                <div class="listing-img">🏪</div>
+                <div class="listing-info">
+                  <div class="listing-addr">4820 E Broadway Blvd, Tucson</div>
+                  <div class="listing-meta">Retail · 2,800 sf · Built 2008 · Available Now</div>
+                  <div class="listing-tags">
+                    <span class="ltag new">⭐ NEW</span>
+                    <span class="ltag">Sprinklered</span>
+                    <span class="ltag">High Traffic</span>
+                    <span class="ltag">CoStar</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="listing-price">$3,220/mo</div>
+                  <button class="btn-outline" style="margin-top:8px;font-size:9px">Include</button>
+                </div>
+              </div>
+              <div class="wf1-listing-card new-listing">
+                <div class="listing-img">🏬</div>
+                <div class="listing-info">
+                  <div class="listing-addr">2930 N Oracle Rd, Tucson</div>
+                  <div class="listing-meta">Retail · 3,200 sf · Built 2015 · Available Now</div>
+                  <div class="listing-tags">
+                    <span class="ltag new">⭐ NEW</span>
+                    <span class="ltag">End Cap</span>
+                    <span class="ltag">Crexi</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="listing-price">$3,456/mo</div>
+                  <button class="btn-outline" style="margin-top:8px;font-size:9px">Include</button>
+                </div>
+              </div>
+              <div class="wf1-listing-card">
+                <div class="listing-img">🏢</div>
+                <div class="listing-info">
+                  <div class="listing-addr">6280 S Campbell Ave, Tucson</div>
+                  <div class="listing-meta">Retail/Office · 2,600 sf · Built 2001</div>
+                  <div class="listing-tags">
+                    <span class="ltag">Existing</span>
+                    <span class="ltag">Parking ++</span>
+                    <span class="ltag">LoopNet</span>
+                  </div>
+                </div>
+                <div>
+                  <div class="listing-price">$2,990/mo</div>
+                  <button class="btn-outline" style="margin-top:8px;font-size:9px">Include</button>
+                </div>
+              </div>
+            </div>
+            <div class="wf1-bottombar">
+              <input class="wf1-input" placeholder="Edit email subject or add a note…" />
+              <button class="btn-outline">Preview Email</button>
+              <button class="btn-gold">Send Email + Text</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div class="mobile-wrap">
+      <div class="mobile-label">Mobile App</div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mob-header">
+            <div class="mob-title">CLIENTS</div>
+            <div class="mob-icon">⚙️</div>
+          </div>
+          <div class="mob-search">
+            <input placeholder="🔍  Search clients…" />
+          </div>
+          <div class="mob-section-label">Alerts today</div>
+          <div class="mob-client-card alert">
+            <div><div class="mcname">Elijah Daly</div><div class="mcmeta">Retail · 2,500–3,500sf</div></div>
+            <div class="mcbadge">2 NEW</div>
+          </div>
+          <div class="mob-client-card alert">
+            <div><div class="mcname">Tom Farley</div><div class="mcmeta">Mixed-Use · $4,000/mo</div></div>
+            <div class="mcbadge">3 NEW</div>
+          </div>
+          <div class="mob-section-label">New listings — Elijah</div>
+          <div class="mob-prop-card">
+            <div class="mob-prop-img">🏪<div class="mob-prop-badge">NEW</div></div>
+            <div class="mob-prop-info">
+              <div class="mob-prop-addr">4820 E Broadway Blvd</div>
+              <div class="mob-prop-meta">Retail · 2,800 sf · CoStar</div>
+              <div class="mob-prop-price">$3,220/mo</div>
+            </div>
+          </div>
+          <div class="mob-prop-card">
+            <div class="mob-prop-img">🏬<div class="mob-prop-badge">NEW</div></div>
+            <div class="mob-prop-info">
+              <div class="mob-prop-addr">2930 N Oracle Rd</div>
+              <div class="mob-prop-meta">Retail · 3,200 sf · Crexi</div>
+              <div class="mob-prop-price">$3,456/mo</div>
+            </div>
+          </div>
+          <div style="height:16px"></div>
+          <div class="mob-bottom-nav">
+            <div class="mob-nav-item active"><div class="ni">👥</div>Clients</div>
+            <div class="mob-nav-item"><div class="ni">🔍</div>Search</div>
+            <div class="mob-nav-item"><div class="ni">📬</div>Outbox</div>
+            <div class="mob-nav-item"><div class="ni">⚡</div>Alerts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     WF 2 — REPORT BUILDER
+═══════════════════════════════════════════════════ -->
+<div class="wf-section" id="wf2">
+  <div class="section-header">
+    <div class="sh-left">
+      <div class="wf-badge">Workflow 02</div>
+      <h2>BRANDED<br><em>REPORT</em> BUILDER</h2>
+      <p class="sh-desc">No more CoStar boilerplate. Set parameters, hit generate. Out comes a beautiful branded PDF that looks nothing like what everyone else sends.</p>
+    </div>
+  </div>
+  <div class="dual-preview">
+
+    <!-- DESKTOP -->
+    <div class="desktop-frame">
+      <div class="desktop-chrome">
+        <div class="chrome-dots"><div class="chrome-dot"></div><div class="chrome-dot"></div><div class="chrome-dot"></div></div>
+        <div class="chrome-url">cam-ai.app / report-builder</div>
+      </div>
+      <div class="desktop-content">
+        <div class="wf2-desktop">
+          <div class="wf2-left">
+            <div class="wf2-panel-header">
+              <h3>Report Parameters</h3>
+              <p>Configure and generate a branded report</p>
+            </div>
+            <div class="wf2-form">
+              <div class="form-group">
+                <label>Client Name</label>
+                <input class="form-input" placeholder="Elijah Daly" />
+              </div>
+              <div class="form-group">
+                <label>Property Type</label>
+                <input class="form-input" placeholder="Retail" />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Min SF</label>
+                  <input class="form-input" placeholder="2,500" />
+                </div>
+                <div class="form-group">
+                  <label>Max SF</label>
+                  <input class="form-input" placeholder="3,500" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Max Monthly Rent</label>
+                <input class="form-input" placeholder="$3,500" />
+              </div>
+              <div class="form-group">
+                <label>Report Title</label>
+                <input class="form-input" placeholder="2,500–3,500 SF Retail · Under $3,500/mo" />
+              </div>
+              <div class="form-group">
+                <label>Include</label>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">
+                  <span class="source-pill active" style="cursor:pointer">Photos</span>
+                  <span class="source-pill active" style="cursor:pointer">Map Link</span>
+                  <span class="source-pill active" style="cursor:pointer">Traffic Count</span>
+                  <span class="source-pill" style="cursor:pointer">Floor Plans</span>
+                  <span class="source-pill active" style="cursor:pointer">Cross Streets</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Sources</label>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px">
+                  <span class="source-pill active" style="cursor:pointer">CoStar</span>
+                  <span class="source-pill active" style="cursor:pointer">Crexi</span>
+                  <span class="source-pill active" style="cursor:pointer">LoopNet</span>
+                </div>
+              </div>
+            </div>
+            <button class="wf2-generate">⚡ Generate Report</button>
+          </div>
+          <div class="wf2-right">
+            <div class="report-preview">
+              <div class="report-cover">
+                <div class="report-cover-brand">CAMERON NORWOOD · COMMERCIAL REAL ESTATE · TUCSON</div>
+                <div class="report-cover-title">Retail Space Report<br>Tucson, Arizona</div>
+                <div class="report-cover-sub">Prepared for Elijah Daly · April 11, 2025</div>
+                <div class="report-cover-meta">
+                  <div class="rcm"><div class="rcm-label">Size Range</div><div class="rcm-val">2,500–3,500 SF</div></div>
+                  <div class="rcm"><div class="rcm-label">Max Monthly</div><div class="rcm-val">$3,500</div></div>
+                  <div class="rcm"><div class="rcm-label">Properties Found</div><div class="rcm-val">15</div></div>
+                </div>
+              </div>
+              <div class="report-prop">
+                <div class="report-prop-img">🏪</div>
+                <div class="report-prop-body">
+                  <div class="report-prop-addr">4820 E Broadway Blvd</div>
+                  <div class="report-prop-meta">Retail · Tucson, AZ · Available Immediately · Cross: Rosemont Blvd</div>
+                  <div class="report-prop-grid">
+                    <div class="rpg-item"><div class="rpg-label">Square Feet</div><div class="rpg-val">2,800</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Monthly Rate</div><div class="rpg-val">$3,220</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Year Built</div><div class="rpg-val">2008</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Traffic Count</div><div class="rpg-val">38,000/day</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Parking</div><div class="rpg-val">4.0 / 1,000</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Sprinklered</div><div class="rpg-val">Yes</div></div>
+                  </div>
+                  <div style="margin-top:10px;font-size:10px;color:#3a7fd4;cursor:pointer">📍 View on Google Maps →</div>
+                </div>
+              </div>
+              <div class="report-prop">
+                <div class="report-prop-img">🏬</div>
+                <div class="report-prop-body">
+                  <div class="report-prop-addr">2930 N Oracle Rd</div>
+                  <div class="report-prop-meta">Retail End Cap · Tucson, AZ · Available April 2025 · Cross: Wetmore Rd</div>
+                  <div class="report-prop-grid">
+                    <div class="rpg-item"><div class="rpg-label">Square Feet</div><div class="rpg-val">3,200</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Monthly Rate</div><div class="rpg-val">$3,456</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Year Built</div><div class="rpg-val">2015</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Traffic Count</div><div class="rpg-val">52,000/day</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Parking</div><div class="rpg-val">5.5 / 1,000</div></div>
+                    <div class="rpg-item"><div class="rpg-label">Sprinklered</div><div class="rpg-val">Yes</div></div>
+                  </div>
+                  <div style="margin-top:10px;font-size:10px;color:#3a7fd4;cursor:pointer">📍 View on Google Maps →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div class="mobile-wrap">
+      <div class="mobile-label">Mobile App</div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mob-header">
+            <div class="mob-title">REPORTS</div>
+            <div class="mob-icon">📄</div>
+          </div>
+          <div class="mob-tab-bar">
+            <div class="mob-tab active">New Report</div>
+            <div class="mob-tab">Past Reports</div>
+          </div>
+          <div class="mob-form">
+            <div>
+              <label>Client</label>
+              <input placeholder="Elijah Daly" />
+            </div>
+            <div>
+              <label>Property Type</label>
+              <input placeholder="Retail" />
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div><label>Min SF</label><input placeholder="2,500" /></div>
+              <div><label>Max SF</label><input placeholder="3,500" /></div>
+            </div>
+            <div>
+              <label>Max Monthly</label>
+              <input placeholder="$3,500" />
+            </div>
+            <button class="mob-btn">⚡ Generate</button>
+          </div>
+          <div class="mob-section-label">Recent Reports</div>
+          <div class="mob-report-card">
+            <div class="mob-report-top">
+              <div class="rt">Retail — Elijah Daly</div>
+              <div class="rs">Apr 11 · 15 properties · Tucson</div>
+            </div>
+            <div class="mob-report-items">
+              <div class="mob-report-item">
+                <div class="mri-img">🏪</div>
+                <div><div class="mri-addr">4820 E Broadway</div><div class="mri-meta">2,800 sf</div></div>
+                <div class="mri-price">$3,220</div>
+              </div>
+              <div class="mob-report-item">
+                <div class="mri-img">🏬</div>
+                <div><div class="mri-addr">2930 N Oracle</div><div class="mri-meta">3,200 sf</div></div>
+                <div class="mri-price">$3,456</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:12px">
+            <button class="mob-btn" style="background:transparent;border:1px solid var(--gold);color:var(--gold);">📤 Send to Elijah</button>
+          </div>
+          <div class="mob-bottom-nav">
+            <div class="mob-nav-item"><div class="ni">👥</div>Clients</div>
+            <div class="mob-nav-item active"><div class="ni">📄</div>Reports</div>
+            <div class="mob-nav-item"><div class="ni">📬</div>Outbox</div>
+            <div class="mob-nav-item"><div class="ni">⚡</div>Alerts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     WF 3 — OUTREACH ENGINE
+═══════════════════════════════════════════════════ -->
+<div class="wf-section" id="wf3">
+  <div class="section-header">
+    <div class="sh-left">
+      <div class="wf-badge">Workflow 03</div>
+      <h2>TENANT<br><em>OUTREACH</em> ENGINE</h2>
+      <p class="sh-desc">Upload a flyer. AI reads it, builds a lead list from public lease data, drafts personalized emails. Click send. Done.</p>
+    </div>
+  </div>
+  <div class="dual-preview">
+
+    <!-- DESKTOP -->
+    <div class="desktop-frame">
+      <div class="desktop-chrome">
+        <div class="chrome-dots"><div class="chrome-dot"></div><div class="chrome-dot"></div><div class="chrome-dot"></div></div>
+        <div class="chrome-url">cam-ai.app / outreach</div>
+      </div>
+      <div class="desktop-content">
+        <div class="wf3-desktop">
+          <div class="wf3-topbar">
+            <h4>Outreach Campaigns</h4>
+            <div class="upload-zone">
+              <span>📎</span>
+              <span>Upload Listing Flyer</span>
+            </div>
+            <button class="btn-gold">Launch Campaign</button>
+          </div>
+          <div class="wf3-body">
+            <div class="wf3-flyer-panel">
+              <div class="wf3-flyer-img">
+                🏢
+                <div class="flyer-badge">9200 E Broadway · Active</div>
+              </div>
+              <div class="wf3-extracted">
+                <h5>AI Extracted Profile</h5>
+                <div class="ext-row"><span class="ext-label">Address</span><span class="ext-val">9200 E Broadway</span></div>
+                <div class="ext-row"><span class="ext-label">Type</span><span class="ext-val">Retail / Office</span></div>
+                <div class="ext-row"><span class="ext-label">Size</span><span class="ext-val">3,200 SF</span></div>
+                <div class="ext-row"><span class="ext-label">Price</span><span class="ext-val">$3,200/mo</span></div>
+                <div class="ext-row"><span class="ext-label">Parking</span><span class="ext-val">4.5 / 1,000</span></div>
+                <div class="ext-row"><span class="ext-label">Target Tenant</span><span class="ext-val gold">Retail, Restaurant, Service</span></div>
+                <div class="ext-row"><span class="ext-label">Match Range</span><span class="ext-val">2,000–4,000 SF leases</span></div>
+                <div class="ext-row"><span class="ext-label">Leads Found</span><span class="ext-val green">62</span></div>
+              </div>
+            </div>
+            <div class="wf3-main">
+              <div class="wf3-tabs">
+                <div class="wf3-tab active">Lead List (62)</div>
+                <div class="wf3-tab">Email Drafts</div>
+                <div class="wf3-tab">Sent (0)</div>
+                <div class="wf3-tab">Responses</div>
+              </div>
+              <div class="wf3-leads">
+                <div class="lead-card">
+                  <div class="lead-avatar">👩</div>
+                  <div class="lead-info">
+                    <div class="lead-name">Maria Santos — Santos Bakery</div>
+                    <div class="lead-company">Leased 2,400 SF · 820 W Grant Rd · 2022</div>
+                    <div class="lead-lease">✓ Lease expires approx. 2027 · May need expansion</div>
+                  </div>
+                  <div class="lead-actions">
+                    <span class="lead-status ls-warm">Warm Lead</span>
+                    <button class="lead-btn">View Draft</button>
+                  </div>
+                </div>
+                <div class="lead-card">
+                  <div class="lead-avatar">👨</div>
+                  <div class="lead-info">
+                    <div class="lead-name">Derek Nolan — Nolan Fitness</div>
+                    <div class="lead-company">Leased 3,100 SF · 4002 E Speedway · 2021</div>
+                    <div class="lead-lease">✓ Fitness studio — high match for traffic & parking</div>
+                  </div>
+                  <div class="lead-actions">
+                    <span class="lead-status ls-warm">Warm Lead</span>
+                    <button class="lead-btn">View Draft</button>
+                  </div>
+                </div>
+                <div class="lead-card">
+                  <div class="lead-avatar">🏢</div>
+                  <div class="lead-info">
+                    <div class="lead-name">Pima Family Advocacy</div>
+                    <div class="lead-company">Leased 2,200 SF · 300 W Fort Lowell · 2023</div>
+                    <div class="lead-lease">✓ Nonprofit office — could need larger footprint</div>
+                  </div>
+                  <div class="lead-actions">
+                    <span class="lead-status ls-new">New Match</span>
+                    <button class="lead-btn">View Draft</button>
+                  </div>
+                </div>
+                <div class="lead-card">
+                  <div class="lead-avatar">💇</div>
+                  <div class="lead-info">
+                    <div class="lead-name">Lucinda Vela — LV Salon</div>
+                    <div class="lead-company">Leased 1,800 SF · 5600 E Speedway · 2020</div>
+                    <div class="lead-lease">✓ Lease likely expiring — great timing</div>
+                  </div>
+                  <div class="lead-actions">
+                    <span class="lead-status ls-cold">Cold</span>
+                    <button class="lead-btn">View Draft</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div class="mobile-wrap">
+      <div class="mobile-label">Mobile App</div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mob-header">
+            <div class="mob-title">OUTREACH</div>
+            <div class="mob-icon">📢</div>
+          </div>
+          <div class="mob-upload-zone">
+            <div class="uz-icon">📎</div>
+            <div class="uz-text">Upload a Listing Flyer</div>
+            <div class="uz-sub">PDF or Image · AI reads it automatically</div>
+            <button class="uz-btn">Choose File</button>
+          </div>
+          <div class="mob-flyer-preview">
+            <div class="fp-icon">🏢</div>
+            <div class="fp-title">9200 E Broadway</div>
+            <div class="fp-meta">Retail · 3,200 SF · $3,200/mo</div>
+          </div>
+          <div class="mob-leads-count">
+            <span>Leads found</span>
+            <span>62 matches</span>
+          </div>
+          <div class="mob-lead-row">
+            <div class="mob-lead-av">👩</div>
+            <div class="mob-lead-info">
+              <div class="mob-lead-name">Maria Santos · Santos Bakery</div>
+              <div class="mob-lead-meta">Leased 2,400 SF · 2022 · Grant Rd</div>
+            </div>
+            <div class="mob-lead-badge" style="background:rgba(201,168,76,0.15);color:var(--gold)">Warm</div>
+          </div>
+          <div class="mob-lead-row">
+            <div class="mob-lead-av">👨</div>
+            <div class="mob-lead-info">
+              <div class="mob-lead-name">Derek Nolan · Nolan Fitness</div>
+              <div class="mob-lead-meta">Leased 3,100 SF · 2021 · Speedway</div>
+            </div>
+            <div class="mob-lead-badge" style="background:rgba(201,168,76,0.15);color:var(--gold)">Warm</div>
+          </div>
+          <div class="mob-lead-row">
+            <div class="mob-lead-av">💇</div>
+            <div class="mob-lead-info">
+              <div class="mob-lead-name">Lucinda Vela · LV Salon</div>
+              <div class="mob-lead-meta">Leased 1,800 SF · 2020 · Speedway</div>
+            </div>
+            <div class="mob-lead-badge" style="background:rgba(255,255,255,0.05);color:var(--muted)">Cold</div>
+          </div>
+          <div style="padding:12px">
+            <button class="mob-btn">📤 Send Campaign to All 62</button>
+          </div>
+          <div class="mob-bottom-nav">
+            <div class="mob-nav-item"><div class="ni">📎</div>Flyers</div>
+            <div class="mob-nav-item active"><div class="ni">📢</div>Leads</div>
+            <div class="mob-nav-item"><div class="ni">✉️</div>Drafts</div>
+            <div class="mob-nav-item"><div class="ni">📊</div>Results</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     WF 4 — OWNER FINDER
+═══════════════════════════════════════════════════ -->
+<div class="wf-section" id="wf4">
+  <div class="section-header">
+    <div class="sh-left">
+      <div class="wf-badge">Workflow 04</div>
+      <h2>OWNER<br><em>FINDER</em> ENGINE</h2>
+      <p class="sh-desc">Address in. Human contact out. Pima Maps → AZ Corp → LinkedIn → contact card. What takes hours now takes seconds.</p>
+    </div>
+  </div>
+  <div class="dual-preview">
+
+    <!-- DESKTOP -->
+    <div class="desktop-frame">
+      <div class="desktop-chrome">
+        <div class="chrome-dots"><div class="chrome-dot"></div><div class="chrome-dot"></div><div class="chrome-dot"></div></div>
+        <div class="chrome-url">cam-ai.app / owner-finder</div>
+      </div>
+      <div class="desktop-content">
+        <div class="wf4-desktop">
+          <div class="wf4-searchbar">
+            <h4>SKIP TRACE</h4>
+            <input class="wf4-input" value="2661 N Coyote Dr, Tucson, AZ" />
+            <button class="btn-gold">Trace Owner</button>
+          </div>
+          <div class="wf4-body">
+            <div class="wf4-col">
+              <div class="wf4-col-header">
+                <h5>Step 1 — Parcel Data</h5>
+                <p>Pima County GIS</p>
+              </div>
+              <div class="wf4-col-body">
+                <div class="wf4-data-block">
+                  <h6>Property Record</h6>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Address</span><span class="wf4-data-val">2661 N Coyote Dr</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Parcel #</span><span class="wf4-data-val gold">110-02-008B</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Zoning</span><span class="wf4-data-val">CR-1</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Lot Size</span><span class="wf4-data-val">0.87 ac</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Building SF</span><span class="wf4-data-val">4,200</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Owner Entity</span><span class="wf4-data-val gold">Legacy Business Properties LLC</span></div>
+                </div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="wf4-data-block">
+                  <h6>2661 N Coyote Dr</h6>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Parcel #</span><span class="wf4-data-val gold">110-02-009A</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Owner</span><span class="wf4-data-val gold">Legacy Business Properties LLC</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Note</span><span class="wf4-data-val">Same owner — both parcels</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="wf4-col">
+              <div class="wf4-col-header">
+                <h5>Step 2 — Corp Search</h5>
+                <p>AZ Corporation Commission</p>
+              </div>
+              <div class="wf4-col-body">
+                <div class="wf4-data-block">
+                  <h6>Legacy Business Properties LLC</h6>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Status</span><span class="wf4-data-val green">Good Standing</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Formed</span><span class="wf4-data-val">March 2011</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Stat. Agent</span><span class="wf4-data-val">Industrial Resources Inc.</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Mailing Addr</span><span class="wf4-data-val">2670 N Coyote Dr #101</span></div>
+                </div>
+                <div class="pipeline-arrow">↓</div>
+                <div class="wf4-data-block">
+                  <h6>Principals</h6>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Member</span><span class="wf4-data-val gold">Steve Juhan</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Member</span><span class="wf4-data-val gold">Paul Juhan</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Admin Mbr</span><span class="wf4-data-val">Industrial Resources Inc.</span></div>
+                  <div class="wf4-data-row"><span class="wf4-data-key">Note</span><span class="wf4-data-val">Park surname — likely family-owned</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="wf4-col">
+              <div class="wf4-col-header">
+                <h5>Step 3 — Contact Found</h5>
+                <p>LinkedIn · Public Web · ATTOM</p>
+              </div>
+              <div class="wf4-col-body">
+                <div class="wf4-person-card">
+                  <div class="wf4-person-top">
+                    <div class="wf4-person-av">👤</div>
+                    <div>
+                      <div class="wf4-person-name">Steve Juhan</div>
+                      <div class="wf4-person-title">Principal · Legacy Business Properties LLC</div>
+                    </div>
+                  </div>
+                  <div class="wf4-contact-item"><span class="wf4-contact-icon">💼</span><span class="wf4-contact-val">linkedin.com/in/stevejuhan</span></div>
+                  <div class="wf4-contact-item"><span class="wf4-contact-icon">📧</span><span class="wf4-contact-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5724793d223f3639173e3933222423253e363b2532243822253432247934383a">[email&#160;protected]</a></span></div>
+                  <div class="wf4-contact-item"><span class="wf4-contact-icon">📞</span><span class="wf4-contact-val">(520) 555-0142</span></div>
+                  <div class="wf4-contact-item"><span class="wf4-contact-icon">🎓</span><span class="wf4-contact-val">University of Arizona, '98</span></div>
+                  <div class="conf-bar">
+                    <div class="conf-label">Confidence Score</div>
+                    <div class="conf-track"><div class="conf-fill" style="width:84%"></div></div>
+                    <div style="font-size:9px;color:var(--gold);margin-top:4px;font-family:'DM Mono',monospace">84% — High Confidence</div>
+                  </div>
+                </div>
+                <div style="margin-top:10px;display:flex;gap:8px">
+                  <button class="btn-gold" style="flex:1;font-size:10px;padding:10px">Add to CRM</button>
+                  <button class="btn-outline" style="flex:1;font-size:10px;padding:10px">Draft Outreach</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div class="mobile-wrap">
+      <div class="mobile-label">Mobile App</div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mob-header">
+            <div class="mob-title">OWNER FIND</div>
+            <div class="mob-icon">🔍</div>
+          </div>
+          <div class="mob-addr-search">
+            <input value="2661 N Coyote Dr, Tucson" />
+            <button class="mob-btn">🔎 Trace Owner</button>
+          </div>
+          <div class="mob-section-label">Pipeline</div>
+          <div class="mob-pipeline-step">
+            <div class="mps-num done">✓</div>
+            <div><div class="mps-title">Pima County GIS</div><div class="mps-result">Parcel 110-02-008B · Legacy Business Properties LLC</div></div>
+          </div>
+          <div class="mob-pipeline-step">
+            <div class="mps-num done">✓</div>
+            <div><div class="mps-title">AZ Corp Commission</div><div class="mps-result">Principals: Steve Juhan, Paul Juhan</div></div>
+          </div>
+          <div class="mob-pipeline-step">
+            <div class="mps-num done">✓</div>
+            <div><div class="mps-title">LinkedIn / Web Lookup</div><div class="mps-result">Contact found — 84% confidence</div></div>
+          </div>
+          <div class="mob-section-label">Result</div>
+          <div class="mob-result-card">
+            <div class="mob-result-name">Steve Juhan</div>
+            <div class="mob-result-sub">Principal · Legacy Business Properties LLC</div>
+            <div class="mob-contact-item"><span class="mob-contact-icon">📧</span><span class="mob-contact-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0a3febaa5b8b1be90b9beb4a5a3a4a2b9b1bca2b5a3bfa5a2b3b5a3feb3bfbd">[email&#160;protected]</a></span></div>
+            <div class="mob-contact-item"><span class="mob-contact-icon">📞</span><span class="mob-contact-val">(520) 555-0142</span></div>
+            <div class="mob-contact-item"><span class="mob-contact-icon">💼</span><span class="mob-contact-val">linkedin.com/in/stevejuhan</span></div>
+          </div>
+          <div style="padding:12px;display:flex;gap:8px">
+            <button class="mob-btn" style="font-size:11px">Add to CRM</button>
+            <button class="mob-btn" style="background:transparent;border:1px solid var(--gold);color:var(--gold);font-size:11px">Draft Email</button>
+          </div>
+          <div class="mob-bottom-nav">
+            <div class="mob-nav-item"><div class="ni">🔍</div>Search</div>
+            <div class="mob-nav-item active"><div class="ni">👤</div>Owners</div>
+            <div class="mob-nav-item"><div class="ni">💼</div>CRM</div>
+            <div class="mob-nav-item"><div class="ni">📊</div>History</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     WF 5 — OFF-MARKET HUNTER
+═══════════════════════════════════════════════════ -->
+<div class="wf-section" id="wf5">
+  <div class="section-header">
+    <div class="sh-left">
+      <div class="wf-badge">Workflow 05</div>
+      <h2>OFF-MARKET<br><em>HUNTER</em></h2>
+      <p class="sh-desc">Buyer wants 2K SF on an acre but nothing's listed? Find every matching property anyway. Trace the owner. Send the pitch.</p>
+    </div>
+  </div>
+  <div class="dual-preview">
+
+    <!-- DESKTOP -->
+    <div class="desktop-frame">
+      <div class="desktop-chrome">
+        <div class="chrome-dots"><div class="chrome-dot"></div><div class="chrome-dot"></div><div class="chrome-dot"></div></div>
+        <div class="chrome-url">cam-ai.app / off-market</div>
+      </div>
+      <div class="desktop-content">
+        <div class="wf5-desktop">
+          <div class="wf5-header">
+            <h4>Off-Market Hunter</h4>
+            <div class="wf5-params">
+              <span class="param-chip">2,000 SF min</span>
+              <span class="param-chip">1+ Acre lot</span>
+              <span class="param-chip">Retail / Industrial</span>
+              <span class="param-chip">NE Tucson</span>
+              <span class="param-chip">≤ $500K</span>
+            </div>
+            <button class="btn-gold">Run Hunt</button>
+          </div>
+          <div class="wf5-body">
+            <div class="wf5-map">
+              <div class="map-bg"></div>
+              <div class="map-label">Tucson Metro · 43 Matches Found</div>
+              <div class="map-marker hot" style="top:35%;left:45%"></div>
+              <div class="map-marker hot" style="top:42%;left:58%"></div>
+              <div class="map-marker warm" style="top:55%;left:35%"></div>
+              <div class="map-marker warm" style="top:28%;left:62%"></div>
+              <div class="map-marker warm" style="top:60%;left:55%"></div>
+              <div class="map-marker cold" style="top:70%;left:40%"></div>
+              <div class="map-marker cold" style="top:38%;left:30%"></div>
+              <div class="map-marker cold" style="top:50%;left:70%"></div>
+              <div class="map-marker warm" style="top:45%;left:48%"></div>
+              <div class="map-marker cold" style="top:65%;left:62%"></div>
+              <div style="position:absolute;bottom:16px;left:16px;display:flex;gap:16px">
+                <div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--muted)"><div style="width:8px;height:8px;border-radius:50%;background:var(--rust)"></div>High Match</div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--muted)"><div style="width:8px;height:8px;border-radius:50%;background:var(--gold)"></div>Med Match</div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:9px;color:var(--muted)"><div style="width:8px;height:8px;border-radius:50%;background:var(--blue)"></div>Low Match</div>
+              </div>
+            </div>
+            <div class="wf5-panel">
+              <div class="wf5-panel-header">
+                <h5>Properties Found</h5>
+                <span class="result-count">43 results</span>
+              </div>
+              <div class="wf5-results">
+                <div class="wf5-result-card selected">
+                  <div class="wf5-result-top">
+                    <div><div class="wf5-result-addr">8441 E 22nd St</div><div class="wf5-result-type">Industrial · Not Listed</div></div>
+                    <span class="wf5-match high">High Match</span>
+                  </div>
+                  <div class="wf5-result-meta">2,200 SF · 1.2 Acres · Zoned I-1 · Est. Value $420K</div>
+                  <div class="wf5-result-owner">Owner: Mesa Ventures LLC → Carl Torres (found)</div>
+                  <div class="wf5-btn-row">
+                    <div class="wf5-btn primary">Draft Pitch Email</div>
+                    <div class="wf5-btn secondary">Trace Owner</div>
+                  </div>
+                </div>
+                <div class="wf5-result-card">
+                  <div class="wf5-result-top">
+                    <div><div class="wf5-result-addr">4022 N Stone Ave</div><div class="wf5-result-type">Retail · Not Listed</div></div>
+                    <span class="wf5-match high">High Match</span>
+                  </div>
+                  <div class="wf5-result-meta">2,800 SF · 1.0 Acres · Zoned CR-3 · Est. Value $480K</div>
+                  <div class="wf5-result-owner">Owner: Rodriguez Family Trust → Pending trace</div>
+                  <div class="wf5-btn-row">
+                    <div class="wf5-btn primary">Draft Pitch Email</div>
+                    <div class="wf5-btn secondary">Trace Owner</div>
+                  </div>
+                </div>
+                <div class="wf5-result-card">
+                  <div class="wf5-result-top">
+                    <div><div class="wf5-result-addr">7200 S Kolb Rd</div><div class="wf5-result-type">Warehouse · Not Listed</div></div>
+                    <span class="wf5-match med">Med Match</span>
+                  </div>
+                  <div class="wf5-result-meta">3,500 SF · 2.1 Acres · Zoned I-2 · Est. Value $510K</div>
+                  <div class="wf5-result-owner">Owner: Legacy Holdings AZ → Owner traced</div>
+                  <div class="wf5-btn-row">
+                    <div class="wf5-btn primary">Draft Pitch Email</div>
+                    <div class="wf5-btn secondary">View Owner</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE -->
+    <div class="mobile-wrap">
+      <div class="mobile-label">Mobile App</div>
+      <div class="mobile-frame">
+        <div class="mobile-screen">
+          <div class="mob-header">
+            <div class="mob-title">HUNTER</div>
+            <div class="mob-icon">🎯</div>
+          </div>
+          <div class="mob-buyer-profile">
+            <div class="mob-buyer-label">Buyer Profile</div>
+            <div class="mob-buyer-name">John D. — Industrial Buyer</div>
+            <div class="mob-buyer-params">
+              <span class="mob-param">2,000+ SF</span>
+              <span class="mob-param">1+ Acre</span>
+              <span class="mob-param">Retail/Industrial</span>
+              <span class="mob-param">≤ $500K</span>
+              <span class="mob-param">NE Tucson</span>
+            </div>
+          </div>
+          <div class="mob-map-mini">
+            <div class="map-bg"></div>
+            <div class="mob-map-label">43 Properties Found</div>
+            <div class="map-marker hot" style="top:40%;left:50%"></div>
+            <div class="map-marker warm" style="top:55%;left:35%"></div>
+            <div class="map-marker warm" style="top:30%;left:65%"></div>
+            <div class="map-marker cold" style="top:65%;left:55%"></div>
+            <div class="map-marker cold" style="top:35%;left:25%"></div>
+          </div>
+          <div class="mob-leads-count">
+            <span>Off-market matches</span>
+            <span>43 properties</span>
+          </div>
+          <div class="mob-hit-card">
+            <div>
+              <div class="mob-hit-addr">8441 E 22nd St</div>
+              <div class="mob-hit-meta">2,200 SF · 1.2 ac · Industrial</div>
+              <div class="mob-hit-owner">Owner: Carl Torres (traced)</div>
+            </div>
+            <div class="mob-hit-right">
+              <span class="mob-score" style="background:rgba(58,184,122,0.15);color:var(--green)">High</span>
+              <button class="mob-btn" style="font-size:9px;padding:5px 10px;margin-top:0">Pitch</button>
+            </div>
+          </div>
+          <div class="mob-hit-card">
+            <div>
+              <div class="mob-hit-addr">4022 N Stone Ave</div>
+              <div class="mob-hit-meta">2,800 SF · 1.0 ac · Retail</div>
+              <div class="mob-hit-owner">Owner: Rodriguez Trust · Tracing…</div>
+            </div>
+            <div class="mob-hit-right">
+              <span class="mob-score" style="background:rgba(58,184,122,0.15);color:var(--green)">High</span>
+              <button class="mob-btn" style="font-size:9px;padding:5px 10px;margin-top:0">Trace</button>
+            </div>
+          </div>
+          <div class="mob-hit-card">
+            <div>
+              <div class="mob-hit-addr">7200 S Kolb Rd</div>
+              <div class="mob-hit-meta">3,500 SF · 2.1 ac · Warehouse</div>
+              <div class="mob-hit-owner">Owner: Legacy Holdings AZ</div>
+            </div>
+            <div class="mob-hit-right">
+              <span class="mob-score" style="background:rgba(201,168,76,0.15);color:var(--gold)">Med</span>
+              <button class="mob-btn" style="font-size:9px;padding:5px 10px;margin-top:0">Pitch</button>
+            </div>
+          </div>
+          <div class="mob-bottom-nav">
+            <div class="mob-nav-item"><div class="ni">🎯</div>Hunt</div>
+            <div class="mob-nav-item active"><div class="ni">🏗️</div>Results</div>
+            <div class="mob-nav-item"><div class="ni">👤</div>Owners</div>
+            <div class="mob-nav-item"><div class="ni">✉️</div>Pitches</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function showWF(num, el) {
+  document.querySelectorAll('.wf-section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  var section = document.getElementById('wf' + num);
+  if (section) section.classList.add('active');
+  if (el) el.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded', function() {
+  showWF(1, document.querySelector('.nav-btn'));
+});
+</script>
+</body>
+</html>
