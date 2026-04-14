@@ -1188,5 +1188,153 @@ body::before {
 </div>
 
 </div>
+
+<style>
+  #tour-narrator { position:fixed; bottom:32px; right:32px; z-index:99999; font-family:'DM Mono','Courier New',monospace; }
+  #tour-bubble { background:#0a0a0a; border:1px solid #c9a84c; border-radius:6px; padding:20px 24px; width:340px; box-shadow:0 20px 60px rgba(0,0,0,0.8); display:none; margin-bottom:12px; animation:tourFadeIn 0.3s ease; }
+  #tour-bubble.visible { display:block; }
+  @keyframes tourFadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .tour-avatar { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .tour-avatar-dot { width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c9a84c,#e8c96a);display:flex;align-items:center;justify-content:center;font-size:13px;color:#0a0a0a;font-weight:700;flex-shrink:0; }
+  .tour-avatar-name { font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#c9a84c; }
+  #tour-text { font-size:12.5px;line-height:1.8;color:#e8e0d0;min-height:60px; }
+  .tour-step-counter { font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:12px; }
+  .tour-controls { display:flex;gap:8px;margin-top:14px; }
+  .tour-btn { flex:1;padding:9px 12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;transition:all 0.2s; }
+  .tour-btn-prev { background:#1a1a1a;color:#888;border:1px solid #2a2a2a; }
+  .tour-btn-prev:hover { border-color:#555;color:#ccc; }
+  .tour-btn-next { background:#c9a84c;color:#0a0a0a;font-weight:600; }
+  .tour-btn-next:hover { background:#e8c96a; }
+  .tour-btn-close { background:#1a1a1a;color:#555;border:1px solid #2a2a2a;flex:0 0 auto;padding:9px 14px; }
+  .tour-btn-close:hover { color:#c9a84c;border-color:#c9a84c; }
+  .tour-progress { display:flex;gap:4px;margin-top:12px; }
+  .tour-dot { width:6px;height:6px;border-radius:50%;background:#2a2a2a;transition:background 0.2s; }
+  .tour-dot.active { background:#c9a84c; }
+  .tour-dot.done { background:#444; }
+  #tour-launch { width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#c9a84c,#e8c96a);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(201,168,76,0.4);transition:transform 0.2s,box-shadow 0.2s;font-size:22px;margin-left:auto;position:relative; }
+  #tour-launch:hover { transform:scale(1.08);box-shadow:0 12px 40px rgba(201,168,76,0.6); }
+  .tour-pulse { position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background:rgba(201,168,76,0.3);animation:pulse 2s infinite; }
+  @keyframes pulse { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.8);opacity:0} }
+  .tour-label { position:absolute;bottom:64px;right:0;background:#0a0a0a;color:#c9a84c;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:5px 10px;border:1px solid #c9a84c;border-radius:3px;white-space:nowrap;opacity:0;transition:opacity 0.2s;pointer-events:none; }
+  #tour-launch:hover .tour-label { opacity:1; }
+</style>
+
+<div id="tour-narrator">
+  <div id="tour-bubble">
+    <div class="tour-avatar">
+      <div class="tour-avatar-dot">K</div>
+      <div class="tour-avatar-name">Guided Tour · KAM×AI</div>
+    </div>
+    <div id="tour-text"></div>
+    <div class="tour-step-counter" id="tour-counter"></div>
+    <div class="tour-progress" id="tour-progress"></div>
+    <div class="tour-controls">
+      <button class="tour-btn tour-btn-prev" id="tour-prev" onclick="tourPrev()">← Back</button>
+      <button class="tour-btn tour-btn-next" id="tour-next" onclick="tourNext()">Next →</button>
+      <button class="tour-btn tour-btn-close" onclick="tourClose()">✕</button>
+    </div>
+  </div>
+  <button id="tour-launch" onclick="tourStart()">
+    <span class="tour-pulse"></span>
+    🎯
+    <span class="tour-label">Start Guided Tour</span>
+  </button>
+</div>
+
+<script>
+var TOUR_STEPS = [
+  {
+    "text": "This is the CRE\u00d7AI Master Build Strategy \u2014 the technical and operational roadmap behind the entire suite. This is what proves the system isn't just a demo. It's a production-ready platform with a clear path to full deployment.",
+    "scroll": "body"
+  },
+  {
+    "text": "The 10-Step Audit shows where the build stands today. The architecture is complete. All 5 workflow frontends are built. The full database schema is written and ready to run. The foundation is done.",
+    "scroll": ".section"
+  },
+  {
+    "text": "The Immediate Action Plan is what gets deployed this weekend \u2014 full Express API server, PostgreSQL database live locally, Report Builder fully functional with AI summaries and branded PDF output. All running before Monday.",
+    "scroll": ".section:nth-child(3)"
+  },
+  {
+    "text": "Gmail OAuth, Google Maps API, and Twilio SMS are free-tier integrations that take less than an hour to set up each. CoStar and Crexi API access \u2014 the premium data layer \u2014 gets handled Monday morning directly with their reps.",
+    "scroll": ".section:nth-child(3)"
+  },
+  {
+    "text": "Build Status breakdown: Search Engine, Report Builder, Outreach Engine, Owner Finder, and the full Infrastructure are all green and ready. Off-Market Hunter is partial \u2014 complete in Phase 2, which starts immediately after go-live.",
+    "scroll": ".section:nth-child(4)"
+  },
+  {
+    "text": "The API Access Map shows every external service, what we already have, and the cost of each integration. The majority are free or low-cost tiers. CoStar and Crexi are the premium integrations that unlock the full MLS-level data pipeline.",
+    "scroll": ".section:nth-child(5)"
+  },
+  {
+    "text": "Deployment Stack: Railway for the backend, Vercel for the frontend, Neon for managed PostgreSQL. Everything runs in the cloud \u2014 no local server, zero maintenance, fully scalable from day one.",
+    "scroll": ".section:nth-child(6)"
+  },
+  {
+    "text": "This is the complete picture. From architecture to deployed product. The KAM\u00d7AI Suite has a proven technical foundation, a clear deployment path, and a go-live timeline measured in days \u2014 not months. This is what you're partnering with.",
+    "scroll": "body"
+  }
+];
+var tourIndex = 0;
+var tourTypingTimer = null;
+
+function tourStart() {
+  tourIndex = 0;
+  document.getElementById('tour-bubble').classList.add('visible');
+  document.querySelector('.tour-pulse').style.animation = 'none';
+  tourShowStep();
+}
+function tourClose() {
+  document.getElementById('tour-bubble').classList.remove('visible');
+  if(tourTypingTimer) clearTimeout(tourTypingTimer);
+}
+function tourNext() {
+  if(tourIndex < TOUR_STEPS.length - 1) { tourIndex++; tourShowStep(); }
+  else tourClose();
+}
+function tourPrev() {
+  if(tourIndex > 0) { tourIndex--; tourShowStep(); }
+}
+function tourShowStep() {
+  var step = TOUR_STEPS[tourIndex];
+  if(!step) return;
+  if(step.scroll) {
+    var el = document.querySelector(step.scroll);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  if(step.activate) {
+    var btn = document.querySelector(step.activate);
+    if(btn) { btn.click(); }
+  }
+  document.getElementById('tour-counter').textContent = 'Step ' + (tourIndex+1) + ' of ' + TOUR_STEPS.length;
+  var dots = '';
+  for(var i=0;i<TOUR_STEPS.length;i++) {
+    var c = i<tourIndex?'done':(i===tourIndex?'active':'');
+    dots += '<div class="tour-dot '+c+'"></div>';
+  }
+  document.getElementById('tour-progress').innerHTML = dots;
+  document.getElementById('tour-prev').style.opacity = tourIndex===0?'0.3':'1';
+  document.getElementById('tour-next').textContent = tourIndex===TOUR_STEPS.length-1?'Finish ✓':'Next →';
+  typeText(step.text);
+}
+function typeText(text) {
+  if(tourTypingTimer) clearTimeout(tourTypingTimer);
+  var el = document.getElementById('tour-text');
+  el.textContent = '';
+  var i = 0;
+  function type() {
+    if(i < text.length) { el.textContent += text[i++]; tourTypingTimer = setTimeout(type, 16); }
+  }
+  type();
+}
+document.addEventListener('keydown', function(e) {
+  if(!document.getElementById('tour-bubble').classList.contains('visible')) return;
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') tourNext();
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') tourPrev();
+  if(e.key==='Escape') tourClose();
+});
+</script>
+
 </body>
 </html>

@@ -2126,5 +2126,161 @@ document.addEventListener('DOMContentLoaded', function() {
   showWF(1, document.querySelector('.nav-btn'));
 });
 </script>
+
+<style>
+  #tour-narrator { position:fixed; bottom:32px; right:32px; z-index:99999; font-family:'DM Mono','Courier New',monospace; }
+  #tour-bubble { background:#0a0a0a; border:1px solid #c9a84c; border-radius:6px; padding:20px 24px; width:340px; box-shadow:0 20px 60px rgba(0,0,0,0.8); display:none; margin-bottom:12px; animation:tourFadeIn 0.3s ease; }
+  #tour-bubble.visible { display:block; }
+  @keyframes tourFadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .tour-avatar { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .tour-avatar-dot { width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#c9a84c,#e8c96a);display:flex;align-items:center;justify-content:center;font-size:13px;color:#0a0a0a;font-weight:700;flex-shrink:0; }
+  .tour-avatar-name { font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#c9a84c; }
+  #tour-text { font-size:12.5px;line-height:1.8;color:#e8e0d0;min-height:60px; }
+  .tour-step-counter { font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:12px; }
+  .tour-controls { display:flex;gap:8px;margin-top:14px; }
+  .tour-btn { flex:1;padding:9px 12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;transition:all 0.2s; }
+  .tour-btn-prev { background:#1a1a1a;color:#888;border:1px solid #2a2a2a; }
+  .tour-btn-prev:hover { border-color:#555;color:#ccc; }
+  .tour-btn-next { background:#c9a84c;color:#0a0a0a;font-weight:600; }
+  .tour-btn-next:hover { background:#e8c96a; }
+  .tour-btn-close { background:#1a1a1a;color:#555;border:1px solid #2a2a2a;flex:0 0 auto;padding:9px 14px; }
+  .tour-btn-close:hover { color:#c9a84c;border-color:#c9a84c; }
+  .tour-progress { display:flex;gap:4px;margin-top:12px; }
+  .tour-dot { width:6px;height:6px;border-radius:50%;background:#2a2a2a;transition:background 0.2s; }
+  .tour-dot.active { background:#c9a84c; }
+  .tour-dot.done { background:#444; }
+  #tour-launch { width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#c9a84c,#e8c96a);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(201,168,76,0.4);transition:transform 0.2s,box-shadow 0.2s;font-size:22px;margin-left:auto;position:relative; }
+  #tour-launch:hover { transform:scale(1.08);box-shadow:0 12px 40px rgba(201,168,76,0.6); }
+  .tour-pulse { position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background:rgba(201,168,76,0.3);animation:pulse 2s infinite; }
+  @keyframes pulse { 0%{transform:scale(1);opacity:1} 100%{transform:scale(1.8);opacity:0} }
+  .tour-label { position:absolute;bottom:64px;right:0;background:#0a0a0a;color:#c9a84c;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:5px 10px;border:1px solid #c9a84c;border-radius:3px;white-space:nowrap;opacity:0;transition:opacity 0.2s;pointer-events:none; }
+  #tour-launch:hover .tour-label { opacity:1; }
+</style>
+
+<div id="tour-narrator">
+  <div id="tour-bubble">
+    <div class="tour-avatar">
+      <div class="tour-avatar-dot">K</div>
+      <div class="tour-avatar-name">Guided Tour · KAM×AI</div>
+    </div>
+    <div id="tour-text"></div>
+    <div class="tour-step-counter" id="tour-counter"></div>
+    <div class="tour-progress" id="tour-progress"></div>
+    <div class="tour-controls">
+      <button class="tour-btn tour-btn-prev" id="tour-prev" onclick="tourPrev()">← Back</button>
+      <button class="tour-btn tour-btn-next" id="tour-next" onclick="tourNext()">Next →</button>
+      <button class="tour-btn tour-btn-close" onclick="tourClose()">✕</button>
+    </div>
+  </div>
+  <button id="tour-launch" onclick="tourStart()">
+    <span class="tour-pulse"></span>
+    🎯
+    <span class="tour-label">Start Guided Tour</span>
+  </button>
+</div>
+
+<script>
+var TOUR_STEPS = [
+  {
+    "text": "Welcome to the full KAM\u00d7AI Suite dashboard \u2014 all 5 MVPs running as a live, interactive system. This is the actual product interface. Let me walk you through each workflow.",
+    "scroll": "body"
+  },
+  {
+    "text": "Workflow 1: Search & Alert Engine. The dashboard shows 15 total property matches for active clients, 2 found just today, and 11 alert emails already sent out \u2014 all automatically. Each client has their own saved search profile.",
+    "scroll": "#wf1"
+  },
+  {
+    "text": "The right side shows the mobile view \u2014 exactly what your client sees on their phone. A clean, branded notification with new listings, property details, and a direct call-to-action. The desktop panel feeds the mobile view in real time.",
+    "scroll": "#wf1"
+  },
+  {
+    "text": "Workflow 2: Branded Report Builder. Set client name, property type, size range, and max monthly rent \u2014 then hit Generate. The system pulls from CoStar and Crexi, builds the report, and produces a branded PDF cover page with all parameters populated automatically.",
+    "scroll": "#wf2"
+  },
+  {
+    "text": "The mobile view on the right shows recent reports saved per client \u2014 all accessible, downloadable, and client-ready. No reformatting. No manual data entry. Ever.",
+    "scroll": "#wf2"
+  },
+  {
+    "text": "Workflow 3: Tenant Outreach Engine. Drop in a listing flyer. The AI reads it \u2014 9200 E Broadway, Retail slash Office, 3,200 SF, $3,200 per month. It then finds 62 qualified leads from lease databases and public records.",
+    "scroll": "#wf3"
+  },
+  {
+    "text": "Each lead gets a personalized draft email pulled up with one click. You review, adjust if needed, hit Launch Campaign. 62 targeted, personalized emails sent in minutes. No cold calling. No guessing.",
+    "scroll": "#wf3"
+  },
+  {
+    "text": "Workflow 4: Owner Finder Engine. Enter any address. The system traces the full ownership chain \u2014 parcel data, LLC registration, principal names, contact info \u2014 and delivers a relationship-ready dossier so you reach the right person immediately.",
+    "scroll": "#wf4"
+  },
+  {
+    "text": "Workflow 5: Off-Market Hunter. Input buyer specs. The engine scans every parcel in the metro, identifies matches whether listed or not, runs the skip trace, and queues personalized cold outreach. Your buyer's perfect property \u2014 even if it's never been on the market.",
+    "scroll": "#wf5"
+  },
+  {
+    "text": "That's the complete KAM\u00d7AI Suite \u2014 5 workflows, one dashboard, total automation. Every button you see maps to a real backend process running on your behalf, around the clock. This is the system.",
+    "scroll": "body"
+  }
+];
+var tourIndex = 0;
+var tourTypingTimer = null;
+
+function tourStart() {
+  tourIndex = 0;
+  document.getElementById('tour-bubble').classList.add('visible');
+  document.querySelector('.tour-pulse').style.animation = 'none';
+  tourShowStep();
+}
+function tourClose() {
+  document.getElementById('tour-bubble').classList.remove('visible');
+  if(tourTypingTimer) clearTimeout(tourTypingTimer);
+}
+function tourNext() {
+  if(tourIndex < TOUR_STEPS.length - 1) { tourIndex++; tourShowStep(); }
+  else tourClose();
+}
+function tourPrev() {
+  if(tourIndex > 0) { tourIndex--; tourShowStep(); }
+}
+function tourShowStep() {
+  var step = TOUR_STEPS[tourIndex];
+  if(!step) return;
+  if(step.scroll) {
+    var el = document.querySelector(step.scroll);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  if(step.activate) {
+    var btn = document.querySelector(step.activate);
+    if(btn) { btn.click(); }
+  }
+  document.getElementById('tour-counter').textContent = 'Step ' + (tourIndex+1) + ' of ' + TOUR_STEPS.length;
+  var dots = '';
+  for(var i=0;i<TOUR_STEPS.length;i++) {
+    var c = i<tourIndex?'done':(i===tourIndex?'active':'');
+    dots += '<div class="tour-dot '+c+'"></div>';
+  }
+  document.getElementById('tour-progress').innerHTML = dots;
+  document.getElementById('tour-prev').style.opacity = tourIndex===0?'0.3':'1';
+  document.getElementById('tour-next').textContent = tourIndex===TOUR_STEPS.length-1?'Finish ✓':'Next →';
+  typeText(step.text);
+}
+function typeText(text) {
+  if(tourTypingTimer) clearTimeout(tourTypingTimer);
+  var el = document.getElementById('tour-text');
+  el.textContent = '';
+  var i = 0;
+  function type() {
+    if(i < text.length) { el.textContent += text[i++]; tourTypingTimer = setTimeout(type, 16); }
+  }
+  type();
+}
+document.addEventListener('keydown', function(e) {
+  if(!document.getElementById('tour-bubble').classList.contains('visible')) return;
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') tourNext();
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') tourPrev();
+  if(e.key==='Escape') tourClose();
+});
+</script>
+
 </body>
 </html>
