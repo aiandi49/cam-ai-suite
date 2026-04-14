@@ -1,0 +1,9 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "types/index.ts",
+  "scripts": {
+    "test": "echo \"No tests for shared package\" && exit 0"
+  }
+}

@@ -35,7 +35,9 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
 
       - name: Run database migrations
         run: psql -U postgres -d cam_ai_test -f shared/db/schema.sql
