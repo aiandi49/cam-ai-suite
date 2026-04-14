@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent GitHub Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0e1117;
+    --surface2: #141820;
+    --border: #1e2533;
+    --border-bright: #2a3347;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f32;
+    --gold-glow: rgba(201,168,76,0.12);
+    --green: #2dff9e;
+    --green-dim: rgba(45,255,158,0.1);
+    --red: #ff4d6d;
+    --red-dim: rgba(255,77,109,0.1);
+    --blue: #4d9fff;
+    --text: #e8ecf4;
+    --text-muted: #6b7a96;
+    --text-dim: #3d4a61;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 50px;
+    margin-bottom: 60px;
+    position: relative;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 120px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    color: var(--gold);
+  }
+
+  .subtitle {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    max-width: 600px;
+  }
+
+  /* SECTION */
+  .section {
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .section:nth-child(2) { animation-delay: 0.1s; }
+  .section:nth-child(3) { animation-delay: 0.2s; }
+  .section:nth-child(4) { animation-delay: 0.3s; }
+  .section:nth-child(5) { animation-delay: 0.4s; }
+  .section:nth-child(6) { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label span {
+    color: var(--gold-dim);
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ALERT BOXES */
+  .alert {
+    border-left: 3px solid;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    background: var(--surface);
+    border-radius: 0 6px 6px 0;
+    position: relative;
+  }
+
+  .alert-critical {
+    border-color: var(--red);
+    background: linear-gradient(135deg, rgba(255,77,109,0.06), var(--surface));
+  }
+
+  .alert-success {
+    border-color: var(--green);
+    background: linear-gradient(135deg, rgba(45,255,158,0.06), var(--surface));
+  }
+
+  .alert-info {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, var(--gold-glow), var(--surface));
+  }
+
+  .alert-label {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .alert-critical .alert-label { color: var(--red); }
+  .alert-success .alert-label { color: var(--green); }
+  .alert-info .alert-label { color: var(--gold); }
+
+  .alert p {
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  .code-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .code-title {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .code-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .code-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-bright);
+  }
+
+  pre {
+    padding: 20px 18px;
+    font-size: 12.5px;
+    line-height: 1.8;
+    overflow-x: auto;
+    color: var(--text);
+  }
+
+  .token-key { color: var(--gold); }
+  .token-val { color: var(--green); }
+  .token-comment { color: var(--text-dim); font-style: italic; }
+  .token-warn { color: var(--red); }
+  .token-cmd { color: var(--blue); }
+
+  /* RULES GRID */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 600px) {
+    .rules-grid { grid-template-columns: 1fr; }
+  }
+
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .rule-card:hover {
+    border-color: var(--border-bright);
+  }
+
+  .rule-icon {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .rule-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .rule-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .rule-card.do { border-top: 2px solid var(--green); }
+  .rule-card.dont { border-top: 2px solid var(--red); }
+  .rule-card.do .rule-title { color: var(--green); }
+  .rule-card.dont .rule-title { color: var(--red); }
+
+  /* WORKFLOW STEPS */
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    margin-top: 20px;
+  }
+
+  .step {
+    counter-increment: step;
+    display: flex;
+    gap: 20px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--gold);
+    min-width: 28px;
+    padding-top: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  .step-content {
+    flex: 1;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step:last-child .step-content {
+    border-bottom: none;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .step-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ACCOUNT INFO BOX */
+  .account-box {
+    background: var(--surface2);
+    border: 1px solid var(--gold-dim);
+    border-radius: 10px;
+    padding: 28px;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .account-box::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, var(--gold-glow), transparent 70%);
+    pointer-events: none;
+  }
+
+  .account-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .account-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .account-key {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    min-width: 100px;
+  }
+
+  .account-val {
+    font-size: 13px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+    position: relative;
+  }
+
+  .divider::after {
+    content: '◆';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg);
+    padding: 0 12px;
+    color: var(--text-dim);
+    font-size: 8px;
+  }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 80px;
+    padding-top: 30px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+  }
+
+  .footer-left {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .footer-right {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  /* TAG */
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-weight: 600;
+    margin-right: 6px;
+    margin-bottom: 4px;
+  }
+
+  .tag-gold { background: var(--gold-glow); color: var(--gold); border: 1px solid var(--gold-dim); }
+  .tag-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(45,255,158,0.2); }
+  .tag-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,77,109,0.2); }
+
+  /* MARQUEE TOP BAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 0;
+  }
+
+  .topbar-inner {
+    display: inline-block;
+    animation: marquee 30s linear infinite;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* PRINT */
+  @media print {
+    body { background: white; color: black; }
+    .topbar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    AI AGENT GITHUB PROTOCOL &nbsp;·&nbsp; FOR USE WITH ACCESS TOKEN &nbsp;·&nbsp; READ BEFORE MAKING ANY CHANGES &nbsp;·&nbsp; VERIFY ACCOUNT BEFORE PUSHING &nbsp;·&nbsp; COMMIT ONLY WHAT IS REQUESTED &nbsp;·&nbsp; DO NOT TOUCH BACKEND FILES &nbsp;·&nbsp; AI AGENT GITHUB PROTOCOL &nbsp;·&nbsp; FOR USE WITH ACCESS TOKEN &nbsp;·&nbsp; READ BEFORE MAKING ANY CHANGES &nbsp;·&nbsp; VERIFY ACCOUNT BEFORE PUSHING &nbsp;·&nbsp; COMMIT ONLY WHAT IS REQUESTED &nbsp;·&nbsp; DO NOT TOUCH BACKEND FILES &nbsp;·&nbsp;
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="eyebrow">Operational Directive — Rev 1.0</div>
+    <h1>AI Agent<br><span>GitHub Protocol</span></h1>
+    <p class="subtitle">Rules every AI agent must follow when given a Personal Access Token and repo access. No exceptions.</p>
+    <div style="margin-top:24px;">
+      <span class="tag tag-gold">Access Token</span>
+      <span class="tag tag-green">GitHub Desktop</span>
+      <span class="tag tag-red">No Guessing</span>
+    </div>
+  </div>
+
+  <!-- ACCOUNT SECTION -->
+  <div class="section">
+    <div class="section-label"><span>§01</span> Account Identity</div>
+    <h2>Always Verify This Account First</h2>
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">Before touching a single file, confirm you are working against the correct GitHub account. If any of these details do not match what you see in the repo URL — stop and ask.</p>
+
+    <div class="account-box">
+      <div class="account-row">
+        <span class="account-key">GitHub User</span>
+        <span class="account-val">aiandi49</span>
+      </div>
+      <div class="account-row">
+        <span class="account-key">Repo URL</span>
+        <span class="account-val">github.com/aiandi49/[repo-name]</span>
+      </div>
+      <div class="account-row">
+        <span class="account-key">Git Config Email</span>
+        <span class="account-val">aiandi49@github.com</span>
+      </div>
+      <div class="account-row">
+        <span class="account-key">Git Config Name</span>
+        <span class="account-val">aiandi49</span>
+      </div>
+      <div class="account-row">
+        <span class="account-key">Token Type</span>
+        <span class="account-val">Personal Access Token (Classic) — covers ALL repos under this account</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- HOW TO USE TOKEN -->
+  <div class="section">
+    <div class="section-label"><span>§02</span> Token Usage</div>
+    <h2>How to Authenticate with the Token</h2>
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">Embed the token directly in the clone/push URL. Never prompt the user for a password. Never store the token in any file inside the repo.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-title">Clone with Token</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre><span class="token-comment"># Format: https://TOKEN@github.com/USER/REPO.git</span>
+git clone https://<span class="token-val">TOKEN</span>@github.com/<span class="token-key">aiandi49</span>/<span class="token-key">REPO-NAME</span>.git</pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-title">Push with Token</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre><span class="token-comment"># Always set git identity first</span>
+git config user.email <span class="token-val">"aiandi49@github.com"</span>
+git config user.name  <span class="token-val">"aiandi49"</span>
+
+git add .
+git commit -m <span class="token-val">"[Describe exactly what changed]"</span>
+git push https://<span class="token-val">TOKEN</span>@github.com/<span class="token-key">aiandi49</span>/<span class="token-key">REPO-NAME</span>.git main</pre>
+    </div>
+
+    <div class="alert alert-critical">
+      <div class="alert-label">⚠ Critical</div>
+      <p>One token = access to ALL repos under aiandi49. Do not create a new token. Do not ask the user to rotate the token unless it is confirmed expired or revoked.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- THE WORKFLOW -->
+  <div class="section">
+    <div class="section-label"><span>§03</span> Agent Workflow</div>
+    <h2>The Only Steps You Are Authorized to Take</h2>
+
+    <ol class="steps">
+      <li class="step">
+        <div class="step-content">
+          <div class="step-title">Receive the task</div>
+          <div class="step-desc">User tells you exactly what to change — a file rename, a text update, a new file to add. Nothing else. If it's ambiguous, ask one clear question before proceeding.</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-content">
+          <div class="step-title">Clone the repo using the token</div>
+          <div class="step-desc">Clone fresh every time. Never assume your local copy is up to date. Confirm the repo URL matches github.com/aiandi49/[repo-name] before running any command.</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-content">
+          <div class="step-title">Make only the requested change</div>
+          <div class="step-desc">Touch only the file(s) explicitly mentioned. Do not refactor, rename, reformat, or "improve" anything else. If you see something broken unrelated to the task — report it, don't fix it without permission.</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-content">
+          <div class="step-title">Verify before committing</div>
+          <div class="step-desc">Run a quick check to confirm the change looks correct. For text replacements, grep for the old string to confirm it's gone. For new files, confirm they exist in the right folder.</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-content">
+          <div class="step-title">Commit with a clear message</div>
+          <div class="step-desc">Write a commit message that says exactly what changed. Example: "Rename CAM to KAM in README and workflow HTML files". Never write vague messages like "update" or "fix".</div>
+        </div>
+      </li>
+      <li class="step">
+        <div class="step-content">
+          <div class="step-title">Push and report back</div>
+          <div class="step-desc">Push to main. Then tell the user: what you changed, what files were affected, and what you deliberately left alone. Done. Wait for next instruction.</div>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <hr class="divider">
+
+  <!-- DO / DON'T -->
+  <div class="section">
+    <div class="section-label"><span>§04</span> Rules of Engagement</div>
+    <h2>Do This. Never Do That.</h2>
+
+    <div class="rules-grid">
+      <div class="rule-card do">
+        <div class="rule-icon">✓</div>
+        <div class="rule-title">Confirm the repo URL</div>
+        <div class="rule-desc">Always verify you're pushing to github.com/aiandi49/[correct-repo] before running git push.</div>
+      </div>
+      <div class="rule-card dont">
+        <div class="rule-icon">✗</div>
+        <div class="rule-title">Never guess the URL</div>
+        <div class="rule-desc">If the repo name isn't 100% confirmed, ask. A wrong push can corrupt the repo and take hours to fix.</div>
+      </div>
+      <div class="rule-card do">
+        <div class="rule-icon">✓</div>
+        <div class="rule-title">Change only what's asked</div>
+        <div class="rule-desc">Scope creep breaks things. If asked to rename a word, rename only that word. Nothing else.</div>
+      </div>
+      <div class="rule-card dont">
+        <div class="rule-icon">✗</div>
+        <div class="rule-title">Never touch backend configs</div>
+        <div class="rule-desc">Railway, Render, Supabase, .env files, API keys — these are off limits unless explicitly authorized.</div>
+      </div>
+      <div class="rule-card do">
+        <div class="rule-icon">✓</div>
+        <div class="rule-title">Report what you left alone</div>
+        <div class="rule-desc">After every push, tell the user what you intentionally did NOT change and why.</div>
+      </div>
+      <div class="rule-card dont">
+        <div class="rule-icon">✗</div>
+        <div class="rule-title">Never force push without warning</div>
+        <div class="rule-desc">git push --force rewrites history. Only use it if explicitly told to, and warn the user first.</div>
+      </div>
+      <div class="rule-card do">
+        <div class="rule-icon">✓</div>
+        <div class="rule-title">Set git identity every time</div>
+        <div class="rule-desc">Always run git config user.email and user.name before committing. Use aiandi49@github.com.</div>
+      </div>
+      <div class="rule-card dont">
+        <div class="rule-icon">✗</div>
+        <div class="rule-title">Never commit .env or tokens</div>
+        <div class="rule-desc">Access tokens, API keys, and .env files must never be committed to the repo. Check .gitignore.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- WHAT NOT TO DO -->
+  <div class="section">
+    <div class="section-label"><span>§05</span> Scope Boundaries</div>
+    <h2>What This Token Does NOT Authorize</h2>
+
+    <div class="alert alert-critical">
+      <div class="alert-label">🚫 Off Limits — Frontend/Backend Integrations</div>
+      <p>Do not modify any deployment configs, Railway settings, Render services, Supabase schemas, or environment variables. These are handled separately. If a file change requires a backend restart or redeployment, stop and tell the user.</p>
+    </div>
+
+    <div class="alert alert-critical">
+      <div class="alert-label">🚫 Off Limits — Other Repos Without Confirmation</div>
+      <p>Even though one token covers all repos under aiandi49, do not touch any repo other than the one you were specifically directed to. Always confirm the repo name before cloning.</p>
+    </div>
+
+    <div class="alert alert-success">
+      <div class="alert-label">✅ Authorized — File-Level Changes Only</div>
+      <p>Renaming text, updating HTML content, adding new files, creating folders, fixing typos, updating README files, adding demo pages. These are all safe and authorized without extra confirmation.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- GITHUB DESKTOP NOTE -->
+  <div class="section">
+    <div class="section-label"><span>§06</span> GitHub Desktop</div>
+    <h2>When the User Prefers GitHub Desktop</h2>
+    <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">If the user wants to push via GitHub Desktop instead of having the agent push directly, the agent's job is to prepare the files and tell the user exactly what to do — one step at a time.</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-title">GitHub Desktop Handoff Script</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre><span class="token-comment"># Files are ready. Tell the user:</span>
+
+<span class="token-val">1.</span> Open GitHub Desktop
+<span class="token-val">2.</span> Click "Show in Explorer" on the cam-ai-suite repo
+<span class="token-val">3.</span> Drag the updated files into the folder (replace when asked)
+<span class="token-val">4.</span> Go back to GitHub Desktop — you'll see the changed files listed
+<span class="token-val">5.</span> Type a Summary: <span class="token-key">[exact description of what changed]</span>
+<span class="token-val">6.</span> Click "Commit to main"
+<span class="token-val">7.</span> Click "Push origin"
+<span class="token-val">8.</span> Done — send me a screenshot to confirm</pre>
+    </div>
+
+    <div class="alert alert-info">
+      <div class="alert-label">💡 Best Practice</div>
+      <p>GitHub Desktop is preferred for large file drops and folder replacements. Terminal/token push is preferred for text-level changes the agent can make directly. Use the right tool for the right job.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">Prepared for aiandi49 · KAM×AI Suite Operations</div>
+    <div class="footer-right">Protocol v1.0 · 2025</div>
+  </div>
+
+</div>
+</body>
+</html>
